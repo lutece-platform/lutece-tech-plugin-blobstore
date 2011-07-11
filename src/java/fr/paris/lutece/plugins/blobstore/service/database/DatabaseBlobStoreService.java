@@ -75,21 +75,21 @@ public class DatabaseBlobStoreService implements BlobStoreService
     /**
      * {@inheritDoc}
      */
-    public void delete( String strid )
+    public void delete( String strKey )
     {
-        DatabaseBlobStoreHome.remove( strid );
+        DatabaseBlobStoreHome.remove( strKey );
     }
 
     /**
      * {@inheritDoc}
      */
-    public byte[] getBlob( String strId )
+    public byte[] getBlob( String strKey )
     {
         byte[] blob = null;
 
-        if ( StringUtils.isNotBlank( strId ) )
+        if ( StringUtils.isNotBlank( strKey ) )
         {
-            DatabaseBlobStore blobStore = DatabaseBlobStoreHome.findByPrimaryKey( strId );
+            DatabaseBlobStore blobStore = DatabaseBlobStoreHome.findByPrimaryKey( strKey );
 
             if ( blobStore != null )
             {
@@ -116,11 +116,11 @@ public class DatabaseBlobStoreService implements BlobStoreService
     /**
      * {@inheritDoc}
      */
-    public void update( String strId, byte[] blob )
+    public void update( String strKey, byte[] blob )
     {
-        if ( StringUtils.isNotBlank( strId ) )
+        if ( StringUtils.isNotBlank( strKey ) )
         {
-            DatabaseBlobStore blobStore = DatabaseBlobStoreHome.findByPrimaryKey( strId );
+            DatabaseBlobStore blobStore = DatabaseBlobStoreHome.findByPrimaryKey( strKey );
 
             if ( blobStore != null )
             {
