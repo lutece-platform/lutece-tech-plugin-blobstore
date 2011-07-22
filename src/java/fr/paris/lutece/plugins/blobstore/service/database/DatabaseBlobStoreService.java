@@ -35,9 +35,14 @@ package fr.paris.lutece.plugins.blobstore.service.database;
 
 import fr.paris.lutece.plugins.blobstore.business.database.DatabaseBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.database.DatabaseBlobStoreHome;
+import fr.paris.lutece.portal.service.util.AppLogService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.service.util.BlobStoreService;
+import fr.paris.lutece.portal.service.util.CryptoService;
 
 import org.apache.commons.lang.StringUtils;
+
+import java.util.Date;
 
 
 /**
@@ -47,7 +52,8 @@ import org.apache.commons.lang.StringUtils;
  */
 public class DatabaseBlobStoreService implements BlobStoreService
 {
-    private static final String FIRST = "1";
+    private static final String PROPERTY_ENCRYPTION_ALGORITHM = "blobstore.encryptionAlgorithm";
+    private static final String MESSAGE_COULD_NOT_CREATE_BLOB = "BlobStore Error when generating a new id blob";
 
     /**
      * Generate a new blob key
@@ -55,19 +61,9 @@ public class DatabaseBlobStoreService implements BlobStoreService
      */
     public String generateNewIdBlob(  )
     {
-        // TODO : The key is generated sequentially. For security issues, it is better
-        // to have an algorithm that generates automatically the key in a String
-        String strKey = DatabaseBlobStoreHome.getLastPrimaryKey(  );
-
-        if ( StringUtils.isNotBlank( strKey ) && StringUtils.isNumeric( strKey ) )
-        {
-            int nNewKey = Integer.parseInt( strKey ) + 1;
-            strKey = Integer.toString( nNewKey );
-        }
-        else
-        {
-            strKey = FIRST;
-        }
+        String strTimeStamp = Long.toString( new Date(  ).getTime(  ) );
+        String strAlgorithm = AppPropertiesService.getProperty( PROPERTY_ENCRYPTION_ALGORITHM );
+        String strKey = CryptoService.encrypt( strTimeStamp, strAlgorithm );
 
         return strKey;
     }
@@ -105,12 +101,21 @@ public class DatabaseBlobStoreService implements BlobStoreService
      */
     public String store( byte[] blob )
     {
-        DatabaseBlobStore blobStore = new DatabaseBlobStore(  );
-        blobStore.setId( generateNewIdBlob(  ) );
-        blobStore.setValue( blob );
-        DatabaseBlobStoreHome.create( blobStore );
+        String strKey = generateNewIdBlob(  );
 
-        return blobStore.getId(  );
+        if ( StringUtils.isNotBlank( strKey ) )
+        {
+            DatabaseBlobStore blobStore = new DatabaseBlobStore(  );
+            blobStore.setId( strKey );
+            blobStore.setValue( blob );
+            DatabaseBlobStoreHome.create( blobStore );
+        }
+        else
+        {
+            AppLogService.error( MESSAGE_COULD_NOT_CREATE_BLOB );
+        }
+
+        return strKey;
     }
 
     /**
