@@ -35,14 +35,11 @@ package fr.paris.lutece.plugins.blobstore.service.database;
 
 import fr.paris.lutece.plugins.blobstore.business.database.DatabaseBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.database.DatabaseBlobStoreHome;
+import fr.paris.lutece.plugins.blobstore.util.BlobStoreUtils;
 import fr.paris.lutece.portal.service.util.AppLogService;
-import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.service.util.BlobStoreService;
-import fr.paris.lutece.portal.service.util.CryptoService;
 
 import org.apache.commons.lang.StringUtils;
-
-import java.util.Date;
 
 
 /**
@@ -52,21 +49,7 @@ import java.util.Date;
  */
 public class DatabaseBlobStoreService implements BlobStoreService
 {
-    private static final String PROPERTY_ENCRYPTION_ALGORITHM = "blobstore.encryptionAlgorithm";
     private static final String MESSAGE_COULD_NOT_CREATE_BLOB = "BlobStore Error when generating a new id blob";
-
-    /**
-     * Generate a new blob key
-     * @return a new blob key
-     */
-    public String generateNewIdBlob(  )
-    {
-        String strTimeStamp = Long.toString( new Date(  ).getTime(  ) );
-        String strAlgorithm = AppPropertiesService.getProperty( PROPERTY_ENCRYPTION_ALGORITHM );
-        String strKey = CryptoService.encrypt( strTimeStamp, strAlgorithm );
-
-        return strKey;
-    }
 
     /**
      * {@inheritDoc}
@@ -101,7 +84,7 @@ public class DatabaseBlobStoreService implements BlobStoreService
      */
     public String store( byte[] blob )
     {
-        String strKey = generateNewIdBlob(  );
+        String strKey = BlobStoreUtils.generateNewIdBlob(  );
 
         if ( StringUtils.isNotBlank( strKey ) )
         {
