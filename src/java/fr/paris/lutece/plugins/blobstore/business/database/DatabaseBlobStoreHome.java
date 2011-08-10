@@ -33,6 +33,8 @@
  */
 package fr.paris.lutece.plugins.blobstore.business.database;
 
+import java.io.InputStream;
+
 import fr.paris.lutece.plugins.blobstore.service.BlobStorePlugin;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
@@ -82,6 +84,15 @@ public final class DatabaseBlobStoreHome
     {
         _dao.store( blobStore, _plugin );
     }
+    
+    /**
+     * Update of physical file which is specified in parameter
+     * @param  blobStore The instance of the  record physicalFile which contains the informations to update
+     */
+    public static void updateInputStream( InputStreamDatabaseBlobStore blobStore )
+    {
+        _dao.store( blobStore, _plugin );
+    }
 
     /**
      * Delete the physical file whose identifier is specified in parameter
@@ -101,5 +112,25 @@ public final class DatabaseBlobStoreHome
     public static DatabaseBlobStore findByPrimaryKey( String strKey )
     {
         return _dao.load( strKey, _plugin );
+    }
+    
+    /**
+     * Returns an instance of a physical file whose identifier is specified in parameter
+     *
+     * @param strKey The file  primary key
+     * @return an instance of physical file
+     */
+    public static InputStream findByPrimaryKeyInputStream( String strKey )
+    {
+        return _dao.loadInputStream( strKey, _plugin );
+    }
+    
+    /**
+     * Creation of an instance of record physical file
+     * @param blobStore The instance of the physical file which contains the inputstream to store
+     */
+    public static void createInputStream( InputStreamDatabaseBlobStore blobStore )
+    {
+    	_dao.insert( blobStore, _plugin );
     }
 }

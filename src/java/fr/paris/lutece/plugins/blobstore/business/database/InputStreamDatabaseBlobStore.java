@@ -35,71 +35,48 @@ package fr.paris.lutece.plugins.blobstore.business.database;
 
 import java.io.InputStream;
 
-import fr.paris.lutece.portal.service.plugin.Plugin;
-
-
 /**
- *
- * IBlobStoreDAO
+ * DatabaseBlobStore wrapping an {@link InputStream}
  *
  */
-public interface IDatabaseBlobStoreDAO
-{
-    /**
-     * Get the last primary key
-     * @param plugin {@link Plugin}
-     * @return The last primary key
-     */
-    String loadLastPrimaryKey( Plugin plugin );
+public class InputStreamDatabaseBlobStore {
+    private String _strId;
+    private InputStream _inputStream;
 
     /**
-     * Insert a new record in the table.
-     * @param blobStore  instance of the object to insert
-     * @param plugin {@link Plugin}
+     * Get the id
+     * @return the id
      */
-    void insert( DatabaseBlobStore blobStore, Plugin plugin );
+    public String getId(  )
+    {
+        return _strId;
+    }
 
     /**
-     * Load the data from the table
-     * @param strId The identifier
-     * @param plugin {@link Plugin}
-     * @return the instance of the PhysicalFile
+     * Set the id
+     * @param strId the id
      */
-    DatabaseBlobStore load( String strId, Plugin plugin );
-    
-    /**
-     * Load the inputstream from the table
-     * @param strId The identifier
-     * @param plugin {@link Plugin}
-     * @return the instance of the PhysicalFile
-     */
-    InputStream loadInputStream( String strId, Plugin plugin );
+    public void setId( String strId )
+    {
+        _strId = strId;
+    }
 
     /**
-     * Delete a record from the table
-     * @param strId The identifier
-     * @param plugin {@link Plugin}
+     * Get the value
+     * @return the value
      */
-    void delete( String strId, Plugin plugin );
+    public InputStream getInputStream(  )
+    {
+        return _inputStream;
+    }
 
     /**
-     * Update the data in the table
-     * @param blobStore instance of the object to update
-     * @param plugin {@link Plugin}
+     * Set the value
+     * @param value the value
      */
-    void store( DatabaseBlobStore blobStore, Plugin plugin );
-    
-    /**
-     * Insert the InputStreamDatabaseBlobStore
-     * @param blobStore the InputStreamDatabaseBlobStore
-     * @param plugin the {@link Plugin}
-     */
-    void insert( InputStreamDatabaseBlobStore blobStore, Plugin plugin );
-    
-    /**
-     * Update the data in the table
-     * @param blobStore instance of the object to update
-     * @param plugin {@link Plugin}
-     */
-    void store( InputStreamDatabaseBlobStore blobStore, Plugin plugin );
+    public void setInputStream( InputStream inputStream )
+    {
+    	_inputStream = inputStream;
+    }
+
 }

@@ -33,7 +33,11 @@
  */
 package fr.paris.lutece.plugins.blobstore.business.database;
 
+import java.io.InputStream;
+
 import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.portal.service.util.AppException;
+import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.util.sql.DAOUtil;
 
 import org.apache.commons.lang.StringUtils;
@@ -133,5 +137,63 @@ public final class DatabaseBlobStoreDAO implements IDatabaseBlobStoreDAO
         daoUtil.setString( nIndex++, blobStore.getId(  ) );
         daoUtil.executeUpdate(  );
         daoUtil.free(  );
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void insert( InputStreamDatabaseBlobStore blobStore, Plugin plugin )
+    {
+    	int nIndex = 1;
+    	DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
+    	try
+    	{
+    		daoUtil.setString( nIndex++, blobStore.getId(  ) );
+	    	daoUtil.setBinaryStream(nIndex++, blobStore.getInputStream(), -1 );
+	        daoUtil.executeUpdate(  );
+    	}
+    	catch ( Exception e )
+    	{
+        	AppLogService.error( e.getMessage(  ), e );
+        	throw new AppException( e.getMessage(  ), e );
+		}
+        finally
+        {
+        	daoUtil.free(  );
+        }
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void store( InputStreamDatabaseBlobStore blobStore, Plugin plugin )
+    {
+    	int nIndex = 1;
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE );
+        daoUtil.setBinaryStream( nIndex++, blobStore.getInputStream(  ), -1 );
+        daoUtil.setString( nIndex++, blobStore.getId(  ) );
+        daoUtil.executeUpdate(  );
+        daoUtil.free(  );
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public InputStream loadInputStream( String strId, Plugin plugin )
+    {
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_BY_PRIMARY_KEY );
+        daoUtil.setString( 1, strId );
+        daoUtil.executeQuery(  );
+
+        InputStream inputStream = null;
+
+        if ( daoUtil.next(  ) )
+        {
+        	inputStream = daoUtil.getBinaryStream( 2 );
+        }
+
+        daoUtil.free(  );
+
+        return inputStream;
     }
 }

@@ -33,8 +33,11 @@
  */
 package fr.paris.lutece.plugins.blobstore.service.database;
 
+import java.io.InputStream;
+
 import fr.paris.lutece.plugins.blobstore.business.database.DatabaseBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.database.DatabaseBlobStoreHome;
+import fr.paris.lutece.plugins.blobstore.business.database.InputStreamDatabaseBlobStore;
 import fr.paris.lutece.plugins.blobstore.util.BlobStoreUtils;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.portal.service.util.BlobStoreService;
@@ -117,4 +120,45 @@ public class DatabaseBlobStoreService implements BlobStoreService
             }
         }
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+	public String storeInputStream( InputStream inputStream )
+	{
+		String strKey = BlobStoreUtils.generateNewIdBlob();
+
+        if ( StringUtils.isNotBlank( strKey ) )
+        {
+        	InputStreamDatabaseBlobStore blobStore = new InputStreamDatabaseBlobStore(  );
+        	blobStore.setInputStream( inputStream );
+            blobStore.setId( strKey );
+            DatabaseBlobStoreHome.createInputStream( blobStore );
+        }
+        else
+        {
+            AppLogService.error( MESSAGE_COULD_NOT_CREATE_BLOB );
+        }
+
+        return strKey;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public void updateInputStream( String strKey, InputStream inputStream )
+	{
+		InputStreamDatabaseBlobStore blobStore = new InputStreamDatabaseBlobStore(  );
+    	blobStore.setInputStream( inputStream );
+        blobStore.setId( strKey );
+        DatabaseBlobStoreHome.updateInputStream( blobStore );
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public InputStream getBlobInputStream(String strKey)
+	{
+		return DatabaseBlobStoreHome.findByPrimaryKeyInputStream( strKey );
+	}
 }
