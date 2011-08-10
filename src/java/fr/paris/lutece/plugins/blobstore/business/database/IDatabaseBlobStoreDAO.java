@@ -35,6 +35,8 @@ package fr.paris.lutece.plugins.blobstore.business.database;
 
 import java.io.InputStream;
 
+import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
+import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 
 
@@ -57,7 +59,7 @@ public interface IDatabaseBlobStoreDAO
      * @param blobStore  instance of the object to insert
      * @param plugin {@link Plugin}
      */
-    void insert( DatabaseBlobStore blobStore, Plugin plugin );
+    void insert( BytesBlobStore blobStore, Plugin plugin );
 
     /**
      * Load the data from the table
@@ -65,7 +67,7 @@ public interface IDatabaseBlobStoreDAO
      * @param plugin {@link Plugin}
      * @return the instance of the PhysicalFile
      */
-    DatabaseBlobStore load( String strId, Plugin plugin );
+    BytesBlobStore load( String strId, Plugin plugin );
     
     /**
      * Load the inputstream from the table
@@ -87,19 +89,19 @@ public interface IDatabaseBlobStoreDAO
      * @param blobStore instance of the object to update
      * @param plugin {@link Plugin}
      */
-    void store( DatabaseBlobStore blobStore, Plugin plugin );
+    void store( BytesBlobStore blobStore, Plugin plugin );
     
     /**
      * Insert the InputStreamDatabaseBlobStore
      * @param blobStore the InputStreamDatabaseBlobStore
      * @param plugin the {@link Plugin}
      */
-    void insert( InputStreamDatabaseBlobStore blobStore, Plugin plugin );
+    void insert( InputStreamBlobStore blobStore, Plugin plugin );
     
     /**
      * Update the data in the table
      * @param blobStore instance of the object to update
      * @param plugin {@link Plugin}
      */
-    void store( InputStreamDatabaseBlobStore blobStore, Plugin plugin );
+    void store( InputStreamBlobStore blobStore, Plugin plugin );
 }

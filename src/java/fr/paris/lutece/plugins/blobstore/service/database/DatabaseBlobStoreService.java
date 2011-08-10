@@ -35,9 +35,9 @@ package fr.paris.lutece.plugins.blobstore.service.database;
 
 import java.io.InputStream;
 
-import fr.paris.lutece.plugins.blobstore.business.database.DatabaseBlobStore;
+import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
+import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.database.DatabaseBlobStoreHome;
-import fr.paris.lutece.plugins.blobstore.business.database.InputStreamDatabaseBlobStore;
 import fr.paris.lutece.plugins.blobstore.util.BlobStoreUtils;
 import fr.paris.lutece.portal.service.blobstore.BlobStoreService;
 import fr.paris.lutece.portal.service.util.AppLogService;
@@ -72,7 +72,7 @@ public class DatabaseBlobStoreService implements BlobStoreService
 
         if ( StringUtils.isNotBlank( strKey ) )
         {
-            DatabaseBlobStore blobStore = DatabaseBlobStoreHome.findByPrimaryKey( strKey );
+            BytesBlobStore blobStore = DatabaseBlobStoreHome.findByPrimaryKey( strKey );
 
             if ( blobStore != null )
             {
@@ -92,7 +92,7 @@ public class DatabaseBlobStoreService implements BlobStoreService
 
         if ( StringUtils.isNotBlank( strKey ) )
         {
-            DatabaseBlobStore blobStore = new DatabaseBlobStore(  );
+            BytesBlobStore blobStore = new BytesBlobStore(  );
             blobStore.setId( strKey );
             blobStore.setValue( blob );
             DatabaseBlobStoreHome.create( blobStore );
@@ -112,7 +112,7 @@ public class DatabaseBlobStoreService implements BlobStoreService
     {
         if ( StringUtils.isNotBlank( strKey ) )
         {
-            DatabaseBlobStore blobStore = DatabaseBlobStoreHome.findByPrimaryKey( strKey );
+            BytesBlobStore blobStore = DatabaseBlobStoreHome.findByPrimaryKey( strKey );
 
             if ( blobStore != null )
             {
@@ -131,7 +131,7 @@ public class DatabaseBlobStoreService implements BlobStoreService
 
         if ( StringUtils.isNotBlank( strKey ) )
         {
-        	InputStreamDatabaseBlobStore blobStore = new InputStreamDatabaseBlobStore(  );
+        	InputStreamBlobStore blobStore = new InputStreamBlobStore(  );
         	blobStore.setInputStream( inputStream );
             blobStore.setId( strKey );
             DatabaseBlobStoreHome.createInputStream( blobStore );
@@ -149,7 +149,7 @@ public class DatabaseBlobStoreService implements BlobStoreService
 	 */
 	public void updateInputStream( String strKey, InputStream inputStream )
 	{
-		InputStreamDatabaseBlobStore blobStore = new InputStreamDatabaseBlobStore(  );
+		InputStreamBlobStore blobStore = new InputStreamBlobStore(  );
     	blobStore.setInputStream( inputStream );
         blobStore.setId( strKey );
         DatabaseBlobStoreHome.updateInputStream( blobStore );

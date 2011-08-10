@@ -31,52 +31,24 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.blobstore.business.database;
-
+package fr.paris.lutece.plugins.blobstore.business.filesystem;
 
 /**
- *
- * class BlobStore
+ * FileAlreadyExistsException
  *
  */
-public class DatabaseBlobStore
+public class FileAlreadyExistsException extends Exception 
 {
-    private String _strId;
-    private byte[] _byValue;
 
-    /**
-     * Get the id
-     * @return the id
-     */
-    public String getId(  )
-    {
-        return _strId;
-    }
+	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * FileAlreadyExistsException
+	 * @param strMessage the message
+	 */
+	public FileAlreadyExistsException( String strMessage )
+	{
+		super( strMessage );
+	}
 
-    /**
-     * Set the id
-     * @param strId the id
-     */
-    public void setId( String strId )
-    {
-        _strId = strId;
-    }
-
-    /**
-     * Get the value
-     * @return the value
-     */
-    public byte[] getValue(  )
-    {
-        return _byValue;
-    }
-
-    /**
-     * Set the value
-     * @param value the value
-     */
-    public void setValue( byte[] value )
-    {
-        _byValue = value;
-    }
 }

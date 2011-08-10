@@ -35,6 +35,8 @@ package fr.paris.lutece.plugins.blobstore.business.database;
 
 import java.io.InputStream;
 
+import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
+import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppLogService;
@@ -80,7 +82,7 @@ public final class DatabaseBlobStoreDAO implements IDatabaseBlobStoreDAO
     /**
      * {@inheritDoc}
      */
-    public synchronized void insert( DatabaseBlobStore blobStore, Plugin plugin )
+    public synchronized void insert( BytesBlobStore blobStore, Plugin plugin )
     {
         int nIndex = 1;
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT );
@@ -94,18 +96,18 @@ public final class DatabaseBlobStoreDAO implements IDatabaseBlobStoreDAO
     /**
      * {@inheritDoc}
      */
-    public DatabaseBlobStore load( String strId, Plugin plugin )
+    public BytesBlobStore load( String strId, Plugin plugin )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_BY_PRIMARY_KEY );
         daoUtil.setString( 1, strId );
         daoUtil.executeQuery(  );
 
-        DatabaseBlobStore blobStore = null;
+        BytesBlobStore blobStore = null;
 
         if ( daoUtil.next(  ) )
         {
             int nIndex = 1;
-            blobStore = new DatabaseBlobStore(  );
+            blobStore = new BytesBlobStore(  );
             blobStore.setId( daoUtil.getString( nIndex++ ) );
             blobStore.setValue( daoUtil.getBytes( nIndex++ ) );
         }
@@ -129,7 +131,7 @@ public final class DatabaseBlobStoreDAO implements IDatabaseBlobStoreDAO
     /**
      * {@inheritDoc}
      */
-    public void store( DatabaseBlobStore blobStore, Plugin plugin )
+    public void store( BytesBlobStore blobStore, Plugin plugin )
     {
         int nIndex = 1;
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE );
@@ -142,7 +144,7 @@ public final class DatabaseBlobStoreDAO implements IDatabaseBlobStoreDAO
     /**
      * {@inheritDoc}
      */
-    public void insert( InputStreamDatabaseBlobStore blobStore, Plugin plugin )
+    public void insert( InputStreamBlobStore blobStore, Plugin plugin )
     {
     	int nIndex = 1;
     	DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, plugin );
@@ -166,7 +168,7 @@ public final class DatabaseBlobStoreDAO implements IDatabaseBlobStoreDAO
     /**
      * {@inheritDoc}
      */
-    public void store( InputStreamDatabaseBlobStore blobStore, Plugin plugin )
+    public void store( InputStreamBlobStore blobStore, Plugin plugin )
     {
     	int nIndex = 1;
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE );

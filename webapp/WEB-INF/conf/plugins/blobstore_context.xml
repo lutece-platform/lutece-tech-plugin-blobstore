@@ -4,4 +4,5 @@
 <beans>
 	<!-- DAO -->
 	<bean id="blobstore.blobStoreDAO" class="fr.paris.lutece.plugins.blobstore.business.database.DatabaseBlobStoreDAO" />
+	<bean id="blobstore.fileSystemBlobStoreDAO" class="fr.paris.lutece.plugins.blobstore.business.filesystem.FileSystemBlobStoreDAO" />
 </beans>

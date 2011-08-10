@@ -31,17 +31,18 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.blobstore.business.database;
+package fr.paris.lutece.plugins.blobstore.business;
 
-import java.io.InputStream;
 
 /**
- * DatabaseBlobStore wrapping an {@link InputStream}
+ *
+ * class BytesBlobStore
  *
  */
-public class InputStreamDatabaseBlobStore {
+public class BytesBlobStore
+{
     private String _strId;
-    private InputStream _inputStream;
+    private byte[] _byValue;
 
     /**
      * Get the id
@@ -65,18 +66,17 @@ public class InputStreamDatabaseBlobStore {
      * Get the value
      * @return the value
      */
-    public InputStream getInputStream(  )
+    public byte[] getValue(  )
     {
-        return _inputStream;
+        return _byValue;
     }
 
     /**
      * Set the value
      * @param value the value
      */
-    public void setInputStream( InputStream inputStream )
+    public void setValue( byte[] value )
     {
-    	_inputStream = inputStream;
+        _byValue = value;
     }
-
 }

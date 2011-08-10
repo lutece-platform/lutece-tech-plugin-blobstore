@@ -31,108 +31,114 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.blobstore.business.database;
+package fr.paris.lutece.plugins.blobstore.business.filesystem;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
-import fr.paris.lutece.plugins.blobstore.service.BlobStorePlugin;
-import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 
-
 /**
- * This class provides instances management methods (create, find, ...) for physical file objects
+ * 
+ * FileSystemBlobStoreHome
+ *
  */
-public final class DatabaseBlobStoreHome
+public final class FileSystemBlobStoreHome
 {
-    private static final String BEAN_BLOBSTORE_BLOBSTOREDAO = "blobstore.blobStoreDAO";
-    private static Plugin _plugin = PluginService.getPlugin( BlobStorePlugin.PLUGIN_NAME );
-    private static IDatabaseBlobStoreDAO _dao = (IDatabaseBlobStoreDAO) SpringContextService.getPluginBean( BlobStorePlugin.PLUGIN_NAME,
-            BEAN_BLOBSTORE_BLOBSTOREDAO );
 
+	private static IFileSystemBlobStoreDAO _dao = (IFileSystemBlobStoreDAO) SpringContextService.getBean( "blobstore.fileSystemBlobStoreDAO" );
+	
     /**
      * Private constructor - this class need not be instantiated
      */
-    private DatabaseBlobStoreHome(  )
+    private FileSystemBlobStoreHome(  )
     {
-    }
-
-    /**
-     * Get the last primary key
-     * @return The last primary key
-     */
-    public static String getLastPrimaryKey(  )
-    {
-        return _dao.loadLastPrimaryKey( _plugin );
     }
 
     /**
      * Creation of an instance of record physical file
      * @param blobStore The instance of the physical file which contains the informations to store
+     * @param strBasePath base directory
+     * @throws FileAlreadyExistsException already exists
+     * @throws IOException ioe
      */
-    public static void create( BytesBlobStore blobStore )
+    public static void create( BytesBlobStore blobStore, String strBasePath ) throws IOException, FileAlreadyExistsException
     {
-        _dao.insert( blobStore, _plugin );
+        _dao.insert( blobStore, strBasePath );
     }
 
     /**
      * Update of physical file which is specified in parameter
      * @param  blobStore The instance of the  record physicalFile which contains the informations to update
+     * @param strBasePath base directory
+     * @throws IOException ioe
      */
-    public static void update( BytesBlobStore blobStore )
+    public static void update( BytesBlobStore blobStore, String strBasePath ) throws IOException
     {
-        _dao.store( blobStore, _plugin );
+        _dao.store( blobStore, strBasePath );
     }
     
     /**
      * Update of physical file which is specified in parameter
      * @param  blobStore The instance of the  record physicalFile which contains the informations to update
+     * @param strBasePath base directory
+     * @throws IOException ioe
+     * @throws FileAlreadyExistsException already exists
      */
-    public static void updateInputStream( InputStreamBlobStore blobStore )
+    public static void updateInputStream( InputStreamBlobStore blobStore, String strBasePath ) throws IOException
     {
-        _dao.store( blobStore, _plugin );
+        _dao.storeInputStream( blobStore, strBasePath );
     }
 
     /**
      * Delete the physical file whose identifier is specified in parameter
      * @param strKey The identifier of the record physical file
+     * @param strBasePath base directory
+     * @throws IOException ioe 
      */
-    public static void remove( String strKey )
+    public static boolean remove( String strKey, String strBasePath ) throws IOException
     {
-        _dao.delete( strKey, _plugin );
+        return _dao.delete( strKey, strBasePath );
     }
 
     /**
      * Returns an instance of a physical file whose identifier is specified in parameter
      *
      * @param strKey The file  primary key
+     * @param strBasePath base directory
      * @return an instance of physical file
+     * @throws IOException ioe
      */
-    public static BytesBlobStore findByPrimaryKey( String strKey )
+    public static BytesBlobStore findByPrimaryKey( String strKey, String strBasePath ) throws IOException
     {
-        return _dao.load( strKey, _plugin );
+        return _dao.load( strKey, strBasePath );
     }
     
     /**
      * Returns an instance of a physical file whose identifier is specified in parameter
      *
      * @param strKey The file  primary key
+     * @param strBasePath base directory
      * @return an instance of physical file
+     * @throws IOException ioe
      */
-    public static InputStream findByPrimaryKeyInputStream( String strKey )
+    public static InputStream findByPrimaryKeyInputStream( String strKey, String strBasePath ) throws IOException
     {
-        return _dao.loadInputStream( strKey, _plugin );
+        return _dao.loadInputStream( strKey, strBasePath );
     }
     
     /**
      * Creation of an instance of record physical file
      * @param blobStore The instance of the physical file which contains the inputstream to store
+     * @param strBasePath base directory
+     * @throws IOException  ioe
+     * @throws FileAlreadyExistsException  already exists
      */
-    public static void createInputStream( InputStreamBlobStore blobStore )
+    public static void createInputStream( InputStreamBlobStore blobStore, String strBasePath ) throws FileAlreadyExistsException, IOException
     {
-    	_dao.insert( blobStore, _plugin );
+    	_dao.insert( blobStore, strBasePath );
     }
+
 }
