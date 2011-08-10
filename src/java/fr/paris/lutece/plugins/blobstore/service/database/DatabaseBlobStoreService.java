@@ -39,8 +39,8 @@ import fr.paris.lutece.plugins.blobstore.business.database.DatabaseBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.database.DatabaseBlobStoreHome;
 import fr.paris.lutece.plugins.blobstore.business.database.InputStreamDatabaseBlobStore;
 import fr.paris.lutece.plugins.blobstore.util.BlobStoreUtils;
+import fr.paris.lutece.portal.service.blobstore.BlobStoreService;
 import fr.paris.lutece.portal.service.util.AppLogService;
-import fr.paris.lutece.portal.service.util.BlobStoreService;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -52,7 +52,8 @@ import org.apache.commons.lang.StringUtils;
  */
 public class DatabaseBlobStoreService implements BlobStoreService
 {
-    private static final String MESSAGE_COULD_NOT_CREATE_BLOB = "BlobStore Error when generating a new id blob";
+	private static final long serialVersionUID = 1L;
+	private static final String MESSAGE_COULD_NOT_CREATE_BLOB = "BlobStore Error when generating a new id blob";
 
     /**
      * {@inheritDoc}
