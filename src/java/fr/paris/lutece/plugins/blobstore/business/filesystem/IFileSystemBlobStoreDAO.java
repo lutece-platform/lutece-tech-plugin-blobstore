@@ -33,95 +33,93 @@
  */
 package fr.paris.lutece.plugins.blobstore.business.filesystem;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+
 /**
- * 
+ *
  * Uses filesystem to store blobs.
  *
  */
 public interface IFileSystemBlobStoreDAO
 {
+    /**
+     * Inserts the blobStore
+     * @param blobStore blobStore
+     * @param strBasePath base directory
+     * @throws IOException ioexception
+     * @throws FileAlreadyExistsException if the file already exists
+     */
+    void insert( BytesBlobStore blobStore, String strBasePath )
+        throws IOException, FileAlreadyExistsException;
 
-	/**
-	 * Inserts the blobStore
-	 * @param blobStore blobStore
-	 * @param strBasePath base directory
-	 * @throws IOException ioexception
-	 * @throws FileAlreadyExistsException if the file already exists
-	 */
-	void insert(BytesBlobStore blobStore, String strBasePath)
-			throws IOException, FileAlreadyExistsException;
+    /**
+     * Inserts the InputStreamDatabaseBlobStore
+     * @param blobStore blobStore
+     * @param strBasePath base directory
+     * @throws IOException ioexception
+     * @throws FileAlreadyExistsException if the file already exists
+     */
+    void insert( InputStreamBlobStore blobStore, String strBasePath )
+        throws FileAlreadyExistsException, IOException;
 
-	/**
-	 * Inserts the InputStreamDatabaseBlobStore
-	 * @param blobStore blobStore
-	 * @param strBasePath base directory
-	 * @throws IOException ioexception
-	 * @throws FileAlreadyExistsException if the file already exists
-	 */
-	void insert(InputStreamBlobStore blobStore,
-			String strBasePath) throws FileAlreadyExistsException, IOException;
+    /**
+     * Load the data from the table
+     *
+     * @param strId
+     *            The identifier
+     * @param strBasePath
+     *            base directory
+     * @return the instance of the DatabaseBlobStore
+     * @throws IOException
+     *             ioexception
+     */
+    BytesBlobStore load( String strId, String strBasePath )
+        throws IOException;
 
-	/**
-	 * Load the data from the table
-	 * 
-	 * @param strId
-	 *            The identifier
-	 * @param strBasePath
-	 *            base directory
-	 * @return the instance of the DatabaseBlobStore
-	 * @throws IOException
-	 *             ioexception
-	 */
-	BytesBlobStore load(String strId, String strBasePath)
-			throws IOException;
+    /**
+     * Loads the InputStreamDatabaseBlobStore
+     *
+     * @param strId
+     *            id
+     * @param strBasePath
+     *            base path
+     * @return the InputStreamDatabaseBlobStore
+     * @throws IOException
+     *             ioexception
+     */
+    InputStream loadInputStream( String strId, String strBasePath )
+        throws IOException;
 
-	/**
-	 * Loads the InputStreamDatabaseBlobStore
-	 * 
-	 * @param strId
-	 *            id
-	 * @param strBasePath
-	 *            base path
-	 * @return the InputStreamDatabaseBlobStore
-	 * @throws IOException
-	 *             ioexception
-	 */
-	InputStream loadInputStream(String strId,
-			String strBasePath) throws IOException;
+    /**
+     * Updates the file
+     * @param blobStore the blob
+     * @param strBasePath the base directory
+     * @throws IOException ioexception
+     */
+    void store( BytesBlobStore blobStore, String strBasePath )
+        throws IOException;
 
-	/**
-	 * Updates the file
-	 * @param blobStore the blob
-	 * @param strBasePath the base directory
-	 * @throws IOException ioexception
-	 */
-	void store(BytesBlobStore blobStore, String strBasePath)
-			throws IOException;
+    /**
+     * Updates the file
+     * @param blobStore the blob
+     * @param strBasePath the base directory
+     * @throws IOException ioexception
+     */
+    void storeInputStream( InputStreamBlobStore blobStore, String strBasePath )
+        throws IOException;
 
-	/**
-	 * Updates the file
-	 * @param blobStore the blob
-	 * @param strBasePath the base directory
-	 * @throws IOException ioexception
-	 */
-	void storeInputStream(
-			InputStreamBlobStore blobStore, String strBasePath)
-			throws IOException;
-
-	/**
-	 * Removes the file
-	 * @param strKey the key
-	 * @param strBasePath the base directory
-	 * @return <code>true</code> if the file is deleted, <code>false</code> otherwise
-	 * @throws IOException ioexception
-	 */
-	boolean delete(String strKey, String strBasePath)
-			throws IOException;
-
+    /**
+     * Removes the file
+     * @param strKey the key
+     * @param strBasePath the base directory
+     * @return <code>true</code> if the file is deleted, <code>false</code> otherwise
+     * @throws IOException ioexception
+     */
+    boolean delete( String strKey, String strBasePath )
+        throws IOException;
 }

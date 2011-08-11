@@ -33,23 +33,24 @@
  */
 package fr.paris.lutece.plugins.blobstore.business.filesystem;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+
 /**
- * 
+ *
  * FileSystemBlobStoreHome
  *
  */
 public final class FileSystemBlobStoreHome
 {
+    private static IFileSystemBlobStoreDAO _dao = (IFileSystemBlobStoreDAO) SpringContextService.getBean( 
+            "blobstore.fileSystemBlobStoreDAO" );
 
-	private static IFileSystemBlobStoreDAO _dao = (IFileSystemBlobStoreDAO) SpringContextService.getBean( "blobstore.fileSystemBlobStoreDAO" );
-	
     /**
      * Private constructor - this class need not be instantiated
      */
@@ -64,7 +65,8 @@ public final class FileSystemBlobStoreHome
      * @throws FileAlreadyExistsException already exists
      * @throws IOException ioe
      */
-    public static void create( BytesBlobStore blobStore, String strBasePath ) throws IOException, FileAlreadyExistsException
+    public static void create( BytesBlobStore blobStore, String strBasePath )
+        throws IOException, FileAlreadyExistsException
     {
         _dao.insert( blobStore, strBasePath );
     }
@@ -75,19 +77,20 @@ public final class FileSystemBlobStoreHome
      * @param strBasePath base directory
      * @throws IOException ioe
      */
-    public static void update( BytesBlobStore blobStore, String strBasePath ) throws IOException
+    public static void update( BytesBlobStore blobStore, String strBasePath )
+        throws IOException
     {
         _dao.store( blobStore, strBasePath );
     }
-    
+
     /**
      * Update of physical file which is specified in parameter
      * @param  blobStore The instance of the  record physicalFile which contains the informations to update
      * @param strBasePath base directory
      * @throws IOException ioe
-     * @throws FileAlreadyExistsException already exists
      */
-    public static void updateInputStream( InputStreamBlobStore blobStore, String strBasePath ) throws IOException
+    public static void updateInputStream( InputStreamBlobStore blobStore, String strBasePath )
+        throws IOException
     {
         _dao.storeInputStream( blobStore, strBasePath );
     }
@@ -96,9 +99,11 @@ public final class FileSystemBlobStoreHome
      * Delete the physical file whose identifier is specified in parameter
      * @param strKey The identifier of the record physical file
      * @param strBasePath base directory
-     * @throws IOException ioe 
+     * @return <code>true</code> if the file is removed, <code>false</code> otherwise.
+     * @throws IOException ioe
      */
-    public static boolean remove( String strKey, String strBasePath ) throws IOException
+    public static boolean remove( String strKey, String strBasePath )
+        throws IOException
     {
         return _dao.delete( strKey, strBasePath );
     }
@@ -111,11 +116,12 @@ public final class FileSystemBlobStoreHome
      * @return an instance of physical file
      * @throws IOException ioe
      */
-    public static BytesBlobStore findByPrimaryKey( String strKey, String strBasePath ) throws IOException
+    public static BytesBlobStore findByPrimaryKey( String strKey, String strBasePath )
+        throws IOException
     {
         return _dao.load( strKey, strBasePath );
     }
-    
+
     /**
      * Returns an instance of a physical file whose identifier is specified in parameter
      *
@@ -124,11 +130,12 @@ public final class FileSystemBlobStoreHome
      * @return an instance of physical file
      * @throws IOException ioe
      */
-    public static InputStream findByPrimaryKeyInputStream( String strKey, String strBasePath ) throws IOException
+    public static InputStream findByPrimaryKeyInputStream( String strKey, String strBasePath )
+        throws IOException
     {
         return _dao.loadInputStream( strKey, strBasePath );
     }
-    
+
     /**
      * Creation of an instance of record physical file
      * @param blobStore The instance of the physical file which contains the inputstream to store
@@ -136,9 +143,9 @@ public final class FileSystemBlobStoreHome
      * @throws IOException  ioe
      * @throws FileAlreadyExistsException  already exists
      */
-    public static void createInputStream( InputStreamBlobStore blobStore, String strBasePath ) throws FileAlreadyExistsException, IOException
+    public static void createInputStream( InputStreamBlobStore blobStore, String strBasePath )
+        throws FileAlreadyExistsException, IOException
     {
-    	_dao.insert( blobStore, strBasePath );
+        _dao.insert( blobStore, strBasePath );
     }
-
 }

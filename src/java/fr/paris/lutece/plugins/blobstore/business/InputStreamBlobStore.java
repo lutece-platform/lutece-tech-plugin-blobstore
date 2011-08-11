@@ -35,11 +35,13 @@ package fr.paris.lutece.plugins.blobstore.business;
 
 import java.io.InputStream;
 
+
 /**
  * BlobStore wrapping an {@link InputStream}
  *
  */
-public class InputStreamBlobStore {
+public class InputStreamBlobStore
+{
     private String _strId;
     private InputStream _inputStream;
 
@@ -62,8 +64,8 @@ public class InputStreamBlobStore {
     }
 
     /**
-     * Get the value
-     * @return the value
+     * Get the inputStream
+     * @return the inputStream
      */
     public InputStream getInputStream(  )
     {
@@ -71,12 +73,11 @@ public class InputStreamBlobStore {
     }
 
     /**
-     * Set the value
-     * @param value the value
+     * Set the inputStream
+     * @param inputStream the inputStream
      */
     public void setInputStream( InputStream inputStream )
     {
-    	_inputStream = inputStream;
+        _inputStream = inputStream;
     }
-
 }

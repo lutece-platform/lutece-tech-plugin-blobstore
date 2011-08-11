@@ -33,10 +33,6 @@
  */
 package fr.paris.lutece.plugins.blobstore.service.database;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-
 import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.filesystem.FileAlreadyExistsException;
@@ -46,162 +42,189 @@ import fr.paris.lutece.portal.service.blobstore.BlobStoreService;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppLogService;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
+
 /**
- * 
+ *
  * FileSystemBlobStoreService
  *
  */
-public class FileSystemBlobStoreService implements BlobStoreService {
+public class FileSystemBlobStoreService implements BlobStoreService
+{
+    private static final long serialVersionUID = 1L;
+    private String _strBasePath;
 
-	private static final long serialVersionUID = 1L;
-	private String _strBasePath;
-	
-	/**
-	 * Sets the base directory 
-	 * @param strBasePath base path
-	 */
-	public void setBasePath( String strBasePath )
-	{
-		if ( strBasePath == null )
-		{
-			AppLogService.error( "Base path is not configured for FileSystemBlobStoreService" );
-		}
-		_strBasePath = strBasePath;
-		if ( !strBasePath.endsWith( "/" ) )
-		{
-			_strBasePath += File.separator;
-		}
-	}
-	
-	/**
-	 * Gets the base directory 
-	 * @return the base directory
-	 */
-	public String getBasePath(  )
-	{
-		return _strBasePath;
-	}
+    /**
+     * Sets the base directory
+     * @param strBasePath base path
+     */
+    public void setBasePath( String strBasePath )
+    {
+        if ( strBasePath == null )
+        {
+            AppLogService.error( "Base path is not configured for FileSystemBlobStoreService" );
+        }
 
-	public void delete(String strKey) 
-	{
-		try 
-		{
-			FileSystemBlobStoreHome.remove( strKey, getBasePath(  ) );
-		}
-		catch (IOException e) 
-		{
-			throw new AppException( e.getMessage(  ), e );
-		}
-	}
+        _strBasePath = strBasePath;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public byte[] getBlob(String strKey)
-	{
-		BytesBlobStore blob;
-		try 
-		{
-			blob = FileSystemBlobStoreHome.findByPrimaryKey( strKey, getBasePath(  ) );
-		} catch (IOException e) {
-			AppLogService.error( e.getMessage(  ), e );
-			return null;
-		}
-		return blob == null ? null : blob.getValue(  );
-	}
+        if ( !strBasePath.endsWith( "/" ) )
+        {
+            _strBasePath += File.separator;
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public InputStream getBlobInputStream(String strKey)
-	{
-		try
-		{
-			return FileSystemBlobStoreHome.findByPrimaryKeyInputStream( strKey, getBasePath(  ) );
-		}
-		catch ( IOException ioe )
-		{
-			AppLogService.error( ioe.getMessage(  ), ioe );
-			return null;
-		}
-	}
+    /**
+     * Gets the base directory
+     * @return the base directory
+     */
+    public String getBasePath(  )
+    {
+        return _strBasePath;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public String store(byte[] blob)
-	{
-		String strKey = BlobStoreUtils.generateNewIdBlob(  );
-		BytesBlobStore blobStore = new BytesBlobStore(  );
-		blobStore.setId( strKey );
-		blobStore.setValue( blob );
-		
-		try
-		{
-			FileSystemBlobStoreHome.create( blobStore, getBasePath(  ) );
-		} catch (IOException e) {
-			throw new AppException( e.getMessage(), e );
-		}
-		catch ( FileAlreadyExistsException fe )
-		{
-			throw new AppException( fe.getMessage(), fe );
-		}
-		
-		return strKey;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public void delete( String strKey )
+    {
+        try
+        {
+            FileSystemBlobStoreHome.remove( strKey, getBasePath(  ) );
+        }
+        catch ( IOException e )
+        {
+            throw new AppException( e.getMessage(  ), e );
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public String storeInputStream(InputStream inputStream)
-	{
-		String strKey = BlobStoreUtils.generateNewIdBlob(  );
-		InputStreamBlobStore blob = new InputStreamBlobStore();
-		blob.setId( strKey );
-		blob.setInputStream( inputStream );
-		try {
-			FileSystemBlobStoreHome.createInputStream( blob, getBasePath(  ) );
-		} catch (IOException e) {
-			throw new AppException( e.getMessage(), e );
-		}
-		catch ( FileAlreadyExistsException fe )
-		{
-			throw new AppException( fe.getMessage(), fe );
-		}
-		
-		return strKey;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    public byte[] getBlob( String strKey )
+    {
+        BytesBlobStore blob;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void update(String strKey, byte[] blob)
-	{
-		BytesBlobStore blobStore = new BytesBlobStore();
-		blobStore.setId( strKey );
-		blobStore.setValue( blob );
-		
-		try
-		{
-			FileSystemBlobStoreHome.update( blobStore, getBasePath(  ) );
-		} catch (IOException e) {
-			throw new AppException( e.getMessage(), e );
-		}
-	}
+        try
+        {
+            blob = FileSystemBlobStoreHome.findByPrimaryKey( strKey, getBasePath(  ) );
+        }
+        catch ( IOException e )
+        {
+            AppLogService.error( e.getMessage(  ), e );
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void updateInputStream(String strKey, InputStream inputStream)
-	{
-		InputStreamBlobStore blob = new InputStreamBlobStore();
-		blob.setId( strKey );
-		blob.setInputStream( inputStream );
-		try {
-			FileSystemBlobStoreHome.updateInputStream( blob, getBasePath(  ) );
-		} catch (IOException e) {
-			throw new AppException( e.getMessage(), e );
-		}
-	}
-	
+            return null;
+        }
+
+        return ( blob == null ) ? null : blob.getValue(  );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public InputStream getBlobInputStream( String strKey )
+    {
+        try
+        {
+            return FileSystemBlobStoreHome.findByPrimaryKeyInputStream( strKey, getBasePath(  ) );
+        }
+        catch ( IOException ioe )
+        {
+            AppLogService.error( ioe.getMessage(  ), ioe );
+
+            return null;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String store( byte[] blob )
+    {
+        String strKey = BlobStoreUtils.generateNewIdBlob(  );
+        BytesBlobStore blobStore = new BytesBlobStore(  );
+        blobStore.setId( strKey );
+        blobStore.setValue( blob );
+
+        try
+        {
+            FileSystemBlobStoreHome.create( blobStore, getBasePath(  ) );
+        }
+        catch ( IOException e )
+        {
+            throw new AppException( e.getMessage(  ), e );
+        }
+        catch ( FileAlreadyExistsException fe )
+        {
+            throw new AppException( fe.getMessage(  ), fe );
+        }
+
+        return strKey;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String storeInputStream( InputStream inputStream )
+    {
+        String strKey = BlobStoreUtils.generateNewIdBlob(  );
+        InputStreamBlobStore blob = new InputStreamBlobStore(  );
+        blob.setId( strKey );
+        blob.setInputStream( inputStream );
+
+        try
+        {
+            FileSystemBlobStoreHome.createInputStream( blob, getBasePath(  ) );
+        }
+        catch ( IOException e )
+        {
+            throw new AppException( e.getMessage(  ), e );
+        }
+        catch ( FileAlreadyExistsException fe )
+        {
+            throw new AppException( fe.getMessage(  ), fe );
+        }
+
+        return strKey;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void update( String strKey, byte[] blob )
+    {
+        BytesBlobStore blobStore = new BytesBlobStore(  );
+        blobStore.setId( strKey );
+        blobStore.setValue( blob );
+
+        try
+        {
+            FileSystemBlobStoreHome.update( blobStore, getBasePath(  ) );
+        }
+        catch ( IOException e )
+        {
+            throw new AppException( e.getMessage(  ), e );
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateInputStream( String strKey, InputStream inputStream )
+    {
+        InputStreamBlobStore blob = new InputStreamBlobStore(  );
+        blob.setId( strKey );
+        blob.setInputStream( inputStream );
+
+        try
+        {
+            FileSystemBlobStoreHome.updateInputStream( blob, getBasePath(  ) );
+        }
+        catch ( IOException e )
+        {
+            throw new AppException( e.getMessage(  ), e );
+        }
+    }
 }

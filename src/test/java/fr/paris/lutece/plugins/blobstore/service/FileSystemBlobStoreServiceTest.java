@@ -33,140 +33,150 @@
  */
 package fr.paris.lutece.plugins.blobstore.service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
+import fr.paris.lutece.plugins.blobstore.service.database.FileSystemBlobStoreService;
+import fr.paris.lutece.test.LuteceTestCase;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
-import fr.paris.lutece.plugins.blobstore.service.database.FileSystemBlobStoreService;
-import fr.paris.lutece.test.LuteceTestCase;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import java.util.Arrays;
+
 
 /**
- * 
+ *
  * FileSystemBlobStoreServiceTest
  *
  */
 public class FileSystemBlobStoreServiceTest extends LuteceTestCase
 {
-	private static final String FILE_NAME = "testblob.txt";
-	
-	private String getBaseDirectory()
-	{
-		return getResourcesDir(  ) + "../test-classes/blobstore/";
-	}
-	
-	private FileSystemBlobStoreService getService( String baseDirectory )
-	{
-		FileSystemBlobStoreService service = new FileSystemBlobStoreService();
-		service.setBasePath( baseDirectory );
-		
-		return service;
-	}
-	
-	public void testCreate() throws IOException
-	{
-		clearBlobStore();
-		FileSystemBlobStoreService service = getService( getBaseDirectory() );
-		
-		String strFilename = getResourcesDir(  ) + "../test-classes/" + FILE_NAME;
-		InputStream is = new FileInputStream( strFilename );
-		byte[] bStore = IOUtils.toByteArray( is );
-		IOUtils.closeQuietly( is );
-		
-		String strKey = service.store( bStore );
-		assertTrue( new File( getBaseDirectory() + strKey ).exists(  ) );
-		
-		InputStream is2 = new FileInputStream( getBaseDirectory() + strKey );
-		byte[] bRead = IOUtils.toByteArray( is2 );
-		IOUtils.closeQuietly( is2 );
-		
-		assertTrue( Arrays.equals( bRead, bStore ) );
-	}
-	
-	public void testUpdate() throws IOException
-	{
-		clearBlobStore();
-		FileSystemBlobStoreService service = getService( getBaseDirectory() );
-		
-		String strFilename = getResourcesDir(  ) + "../test-classes/" + FILE_NAME;
-		
-		byte[] bStore;
-		InputStream is = new FileInputStream( strFilename );
-		try
-		{
-			bStore = IOUtils.toByteArray( is );
-		}
-		finally
-		{
-			IOUtils.closeQuietly( is );
-		}
-		
-		String strKey = service.store( bStore );
-		
-		byte[] bUpdate = "Updated bytes".getBytes();
-		service.update( strKey, bUpdate );
-		byte[] bRead;
-		InputStream is2 = new FileInputStream( getBaseDirectory() + strKey );
-		try
-		{
-			bRead = IOUtils.toByteArray( is2 );
-		}
-		finally
-		{
-			IOUtils.closeQuietly( is2 );
-		}
-		
-		System.out.println( new String( bUpdate ) );
-		System.out.println( new String( bRead ) );
-		
-		assertTrue( Arrays.equals( bRead, bUpdate ) );
-	}
-	
-	public void testDelete() throws IOException
-	{
-		clearBlobStore();
-		FileSystemBlobStoreService service = getService( getBaseDirectory() );
-		
-		String strFilename = getResourcesDir(  ) + "../test-classes/" + FILE_NAME;
-		InputStream is = new FileInputStream( strFilename );
-		byte[] bStore;
-		try
-		{
-			bStore = IOUtils.toByteArray( is );
-		}
-		finally
-		{
-			IOUtils.closeQuietly( is );
-		}
-		
-		String strKey = service.store( bStore );
-		service.delete( strKey );
-		assertFalse( new File( getBaseDirectory() + strKey ).exists(  ) );
-	}
-	
-	private void clearBlobStore() throws IOException
-	{
-		String baseDirectory = getBaseDirectory();
-		File baseFile = new File( baseDirectory );
-		if ( baseFile.exists(  ) )
-		{
-			if ( baseFile.isDirectory())
-			{
-				FileUtils.cleanDirectory( baseFile );
-			}
-			else
-			{
-				baseFile.delete();
-				baseFile.mkdir();
-			}
-		}
-		else
-		{
-			baseFile.mkdir();
-		}
-	}
+    private static final String FILE_NAME = "testblob.txt";
+
+    private String getBaseDirectory(  )
+    {
+        return getResourcesDir(  ) + "../test-classes/blobstore/";
+    }
+
+    private FileSystemBlobStoreService getService( String baseDirectory )
+    {
+        FileSystemBlobStoreService service = new FileSystemBlobStoreService(  );
+        service.setBasePath( baseDirectory );
+
+        return service;
+    }
+
+    public void testCreate(  ) throws IOException
+    {
+        clearBlobStore(  );
+
+        FileSystemBlobStoreService service = getService( getBaseDirectory(  ) );
+
+        String strFilename = getResourcesDir(  ) + "../test-classes/" + FILE_NAME;
+        InputStream is = new FileInputStream( strFilename );
+        byte[] bStore = IOUtils.toByteArray( is );
+        IOUtils.closeQuietly( is );
+
+        String strKey = service.store( bStore );
+        assertTrue( new File( getBaseDirectory(  ) + strKey ).exists(  ) );
+
+        InputStream is2 = new FileInputStream( getBaseDirectory(  ) + strKey );
+        byte[] bRead = IOUtils.toByteArray( is2 );
+        IOUtils.closeQuietly( is2 );
+
+        assertTrue( Arrays.equals( bRead, bStore ) );
+    }
+
+    public void testUpdate(  ) throws IOException
+    {
+        clearBlobStore(  );
+
+        FileSystemBlobStoreService service = getService( getBaseDirectory(  ) );
+
+        String strFilename = getResourcesDir(  ) + "../test-classes/" + FILE_NAME;
+
+        byte[] bStore;
+        InputStream is = new FileInputStream( strFilename );
+
+        try
+        {
+            bStore = IOUtils.toByteArray( is );
+        }
+        finally
+        {
+            IOUtils.closeQuietly( is );
+        }
+
+        String strKey = service.store( bStore );
+
+        byte[] bUpdate = "Updated bytes".getBytes(  );
+        service.update( strKey, bUpdate );
+
+        byte[] bRead;
+        InputStream is2 = new FileInputStream( getBaseDirectory(  ) + strKey );
+
+        try
+        {
+            bRead = IOUtils.toByteArray( is2 );
+        }
+        finally
+        {
+            IOUtils.closeQuietly( is2 );
+        }
+
+        System.out.println( new String( bUpdate ) );
+        System.out.println( new String( bRead ) );
+
+        assertTrue( Arrays.equals( bRead, bUpdate ) );
+    }
+
+    public void testDelete(  ) throws IOException
+    {
+        clearBlobStore(  );
+
+        FileSystemBlobStoreService service = getService( getBaseDirectory(  ) );
+
+        String strFilename = getResourcesDir(  ) + "../test-classes/" + FILE_NAME;
+        InputStream is = new FileInputStream( strFilename );
+        byte[] bStore;
+
+        try
+        {
+            bStore = IOUtils.toByteArray( is );
+        }
+        finally
+        {
+            IOUtils.closeQuietly( is );
+        }
+
+        String strKey = service.store( bStore );
+        service.delete( strKey );
+        assertFalse( new File( getBaseDirectory(  ) + strKey ).exists(  ) );
+    }
+
+    private void clearBlobStore(  ) throws IOException
+    {
+        String baseDirectory = getBaseDirectory(  );
+        File baseFile = new File( baseDirectory );
+
+        if ( baseFile.exists(  ) )
+        {
+            if ( baseFile.isDirectory(  ) )
+            {
+                FileUtils.cleanDirectory( baseFile );
+            }
+            else
+            {
+                baseFile.delete(  );
+                baseFile.mkdir(  );
+            }
+        }
+        else
+        {
+            baseFile.mkdir(  );
+        }
+    }
 }

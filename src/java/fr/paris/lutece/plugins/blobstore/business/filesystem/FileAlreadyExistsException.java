@@ -33,22 +33,21 @@
  */
 package fr.paris.lutece.plugins.blobstore.business.filesystem;
 
+
 /**
  * FileAlreadyExistsException
  *
  */
-public class FileAlreadyExistsException extends Exception 
+public class FileAlreadyExistsException extends Exception
 {
+    private static final long serialVersionUID = 1L;
 
-	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * FileAlreadyExistsException
-	 * @param strMessage the message
-	 */
-	public FileAlreadyExistsException( String strMessage )
-	{
-		super( strMessage );
-	}
-
+    /**
+     * FileAlreadyExistsException
+     * @param strMessage the message
+     */
+    public FileAlreadyExistsException( String strMessage )
+    {
+        super( strMessage );
+    }
 }

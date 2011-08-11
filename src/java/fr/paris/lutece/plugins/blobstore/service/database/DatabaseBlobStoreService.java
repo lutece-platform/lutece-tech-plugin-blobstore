@@ -33,8 +33,6 @@
  */
 package fr.paris.lutece.plugins.blobstore.service.database;
 
-import java.io.InputStream;
-
 import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.database.DatabaseBlobStoreHome;
@@ -44,6 +42,8 @@ import fr.paris.lutece.portal.service.util.AppLogService;
 
 import org.apache.commons.lang.StringUtils;
 
+import java.io.InputStream;
+
 
 /**
  *
@@ -52,8 +52,8 @@ import org.apache.commons.lang.StringUtils;
  */
 public class DatabaseBlobStoreService implements BlobStoreService
 {
-	private static final long serialVersionUID = 1L;
-	private static final String MESSAGE_COULD_NOT_CREATE_BLOB = "BlobStore Error when generating a new id blob";
+    private static final long serialVersionUID = 1L;
+    private static final String MESSAGE_COULD_NOT_CREATE_BLOB = "BlobStore Error when generating a new id blob";
 
     /**
      * {@inheritDoc}
@@ -121,18 +121,18 @@ public class DatabaseBlobStoreService implements BlobStoreService
             }
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
-	public String storeInputStream( InputStream inputStream )
-	{
-		String strKey = BlobStoreUtils.generateNewIdBlob();
+    public String storeInputStream( InputStream inputStream )
+    {
+        String strKey = BlobStoreUtils.generateNewIdBlob(  );
 
         if ( StringUtils.isNotBlank( strKey ) )
         {
-        	InputStreamBlobStore blobStore = new InputStreamBlobStore(  );
-        	blobStore.setInputStream( inputStream );
+            InputStreamBlobStore blobStore = new InputStreamBlobStore(  );
+            blobStore.setInputStream( inputStream );
             blobStore.setId( strKey );
             DatabaseBlobStoreHome.createInputStream( blobStore );
         }
@@ -142,24 +142,24 @@ public class DatabaseBlobStoreService implements BlobStoreService
         }
 
         return strKey;
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	public void updateInputStream( String strKey, InputStream inputStream )
-	{
-		InputStreamBlobStore blobStore = new InputStreamBlobStore(  );
-    	blobStore.setInputStream( inputStream );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateInputStream( String strKey, InputStream inputStream )
+    {
+        InputStreamBlobStore blobStore = new InputStreamBlobStore(  );
+        blobStore.setInputStream( inputStream );
         blobStore.setId( strKey );
         DatabaseBlobStoreHome.updateInputStream( blobStore );
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 */
-	public InputStream getBlobInputStream(String strKey)
-	{
-		return DatabaseBlobStoreHome.findByPrimaryKeyInputStream( strKey );
-	}
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public InputStream getBlobInputStream( String strKey )
+    {
+        return DatabaseBlobStoreHome.findByPrimaryKeyInputStream( strKey );
+    }
 }

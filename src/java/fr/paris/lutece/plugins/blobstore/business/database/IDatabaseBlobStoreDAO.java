@@ -33,11 +33,11 @@
  */
 package fr.paris.lutece.plugins.blobstore.business.database;
 
-import java.io.InputStream;
-
 import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
 import fr.paris.lutece.portal.service.plugin.Plugin;
+
+import java.io.InputStream;
 
 
 /**
@@ -68,7 +68,7 @@ public interface IDatabaseBlobStoreDAO
      * @return the instance of the PhysicalFile
      */
     BytesBlobStore load( String strId, Plugin plugin );
-    
+
     /**
      * Load the inputstream from the table
      * @param strId The identifier
@@ -90,14 +90,14 @@ public interface IDatabaseBlobStoreDAO
      * @param plugin {@link Plugin}
      */
     void store( BytesBlobStore blobStore, Plugin plugin );
-    
+
     /**
      * Insert the InputStreamDatabaseBlobStore
      * @param blobStore the InputStreamDatabaseBlobStore
      * @param plugin the {@link Plugin}
      */
     void insert( InputStreamBlobStore blobStore, Plugin plugin );
-    
+
     /**
      * Update the data in the table
      * @param blobStore instance of the object to update

@@ -33,6 +33,12 @@
  */
 package fr.paris.lutece.plugins.blobstore.business.filesystem;
 
+import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
+import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -40,125 +46,131 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-
-import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
-import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
 
 /**
  * Uses filesystem to store blob.
  * <i>Note that <code>strBasePath</code> is the path were blobs are put.</i>
  */
-public class FileSystemBlobStoreDAO implements IFileSystemBlobStoreDAO 
+public class FileSystemBlobStoreDAO implements IFileSystemBlobStoreDAO
 {
-	/**
-     * {@inheritDoc}
-     */
-	public void insert( BytesBlobStore blobStore, String strBasePath ) throws IOException, FileAlreadyExistsException
-	{
-		File file = new File( strBasePath + blobStore.getId(  ) );
-		if ( file.exists(  ) )
-		{
-			throw new FileAlreadyExistsException( "File " + blobStore.getId(  ) + " already exists." );
-		}
-		FileUtils.writeByteArrayToFile( file, blobStore.getValue(  ) );
-	}
-	
-	/**
-     * {@inheritDoc}
-     */
-	public void insert( InputStreamBlobStore blobStore, String strBasePath ) throws FileAlreadyExistsException, IOException
-	{
-		File file = new File( strBasePath + blobStore.getId(  ) );
-		if ( file.exists(  ) )
-		{
-			throw new FileAlreadyExistsException( "File " + blobStore.getId(  ) + " already exists." );
-		}
-		
-		OutputStream out = new FileOutputStream( file );
-		InputStream in  = blobStore.getInputStream(  );
-		
-		try
-		{
-			IOUtils.copyLarge( in, out );
-		}
-		finally
-		{
-			IOUtils.closeQuietly( out );
-			IOUtils.closeQuietly( in );
-		}
-	}
-	
-	/**
-     * {@inheritDoc}
-     */
-    public BytesBlobStore load( String strId, String strBasePath ) throws IOException 
-	{
-    	File file = new File( strBasePath + strId );
-    	
-    	if ( !file.exists(  ) )
-    	{
-    		return null;
-    	}
-    	
-    	BytesBlobStore blobStore = new BytesBlobStore(  );
-    	blobStore.setId( strId );
-    	blobStore.setValue( FileUtils.readFileToByteArray( file ) );
-    	
-    	return blobStore;
-	}
-    
     /**
-     * {@inheritDoc}
-     */
-    public InputStream loadInputStream( String strId, String strBasePath ) throws IOException
+    * {@inheritDoc}
+    */
+    public void insert( BytesBlobStore blobStore, String strBasePath )
+        throws IOException, FileAlreadyExistsException
     {
-    	File file = new File( strBasePath + strId );
-    	
-    	if ( !file.exists(  ) )
-    	{
-    		return null;
-    	}
-    	
-    	return new FileInputStream( file );
+        File file = new File( strBasePath + blobStore.getId(  ) );
+
+        if ( file.exists(  ) )
+        {
+            throw new FileAlreadyExistsException( "File " + blobStore.getId(  ) + " already exists." );
+        }
+
+        FileUtils.writeByteArrayToFile( file, blobStore.getValue(  ) );
     }
-	
+
+    /**
+    * {@inheritDoc}
+    */
+    public void insert( InputStreamBlobStore blobStore, String strBasePath )
+        throws FileAlreadyExistsException, IOException
+    {
+        File file = new File( strBasePath + blobStore.getId(  ) );
+
+        if ( file.exists(  ) )
+        {
+            throw new FileAlreadyExistsException( "File " + blobStore.getId(  ) + " already exists." );
+        }
+
+        OutputStream out = new FileOutputStream( file );
+        InputStream in = blobStore.getInputStream(  );
+
+        try
+        {
+            IOUtils.copyLarge( in, out );
+        }
+        finally
+        {
+            IOUtils.closeQuietly( out );
+            IOUtils.closeQuietly( in );
+        }
+    }
+
+    /**
+    * {@inheritDoc}
+    */
+    public BytesBlobStore load( String strId, String strBasePath )
+        throws IOException
+    {
+        File file = new File( strBasePath + strId );
+
+        if ( !file.exists(  ) )
+        {
+            return null;
+        }
+
+        BytesBlobStore blobStore = new BytesBlobStore(  );
+        blobStore.setId( strId );
+        blobStore.setValue( FileUtils.readFileToByteArray( file ) );
+
+        return blobStore;
+    }
+
     /**
      * {@inheritDoc}
      */
-	public void store( BytesBlobStore blobStore, String strBasePath ) throws IOException
-	{
-		File file = new File( strBasePath + blobStore.getId(  ) );
-		FileUtils.writeByteArrayToFile( file, blobStore.getValue(  ) );
-	}
-	
-	/**
+    public InputStream loadInputStream( String strId, String strBasePath )
+        throws IOException
+    {
+        File file = new File( strBasePath + strId );
+
+        if ( !file.exists(  ) )
+        {
+            return null;
+        }
+
+        return new FileInputStream( file );
+    }
+
+    /**
      * {@inheritDoc}
      */
-	public void storeInputStream( InputStreamBlobStore blobStore, String strBasePath ) throws IOException
-	{
-		File file = new File( strBasePath + blobStore.getId(  ) );
-		OutputStream out = new FileOutputStream( file );
-		InputStream in  = blobStore.getInputStream(  );
-		
-		try
-		{
-			IOUtils.copyLarge( blobStore.getInputStream(  ), out );
-		}
-		finally
-		{
-			IOUtils.closeQuietly( out );
-			IOUtils.closeQuietly( in );
-		}
-	}
-	
-	/**
-     * {@inheritDoc}
-     */
-	public boolean delete( String strKey, String strBasePath ) throws IOException
-	{
-		File file = new File( strBasePath + strKey );
-		return file.delete(  );
-	}
+    public void store( BytesBlobStore blobStore, String strBasePath )
+        throws IOException
+    {
+        File file = new File( strBasePath + blobStore.getId(  ) );
+        FileUtils.writeByteArrayToFile( file, blobStore.getValue(  ) );
+    }
+
+    /**
+    * {@inheritDoc}
+    */
+    public void storeInputStream( InputStreamBlobStore blobStore, String strBasePath )
+        throws IOException
+    {
+        File file = new File( strBasePath + blobStore.getId(  ) );
+        OutputStream out = new FileOutputStream( file );
+        InputStream in = blobStore.getInputStream(  );
+
+        try
+        {
+            IOUtils.copyLarge( blobStore.getInputStream(  ), out );
+        }
+        finally
+        {
+            IOUtils.closeQuietly( out );
+            IOUtils.closeQuietly( in );
+        }
+    }
+
+    /**
+    * {@inheritDoc}
+    */
+    public boolean delete( String strKey, String strBasePath )
+        throws IOException
+    {
+        File file = new File( strBasePath + strKey );
+
+        return file.delete(  );
+    }
 }
