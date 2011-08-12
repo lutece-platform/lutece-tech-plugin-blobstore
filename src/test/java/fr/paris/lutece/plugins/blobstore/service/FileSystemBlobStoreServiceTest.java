@@ -33,7 +33,7 @@
  */
 package fr.paris.lutece.plugins.blobstore.service;
 
-import fr.paris.lutece.plugins.blobstore.service.database.FileSystemBlobStoreService;
+import fr.paris.lutece.plugins.blobstore.service.filesystem.FileSystemBlobStoreService;
 import fr.paris.lutece.test.LuteceTestCase;
 
 import org.apache.commons.io.FileUtils;

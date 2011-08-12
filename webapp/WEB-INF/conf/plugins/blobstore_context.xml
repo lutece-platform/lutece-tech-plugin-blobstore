@@ -5,4 +5,19 @@
 	<!-- DAO -->
 	<bean id="blobstore.blobStoreDAO" class="fr.paris.lutece.plugins.blobstore.business.database.DatabaseBlobStoreDAO" />
 	<bean id="blobstore.fileSystemBlobStoreDAO" class="fr.paris.lutece.plugins.blobstore.business.filesystem.FileSystemBlobStoreDAO" />
+	
+	<bean id="blobstore.hashService" class="fr.paris.lutece.util.signrequest.security.Sha1HashService" />
+	<bean id="blobstore.requestAuthenticator" class="fr.paris.lutece.util.signrequest.RequestHashAuthenticator" >
+        <property name="hashService" ref="blobstore.hashService" />
+        <property name="signatureElements" > 
+            <list>
+                <value>blobstore</value>
+                <value>blob_key</value>
+            </list>
+        </property>
+        <property name="privateKey">
+            <value>change me</value>
+        </property>
+    </bean>
+	
 </beans>

@@ -31,7 +31,7 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.blobstore.service.database;
+package fr.paris.lutece.plugins.blobstore.service.filesystem;
 
 import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
@@ -56,6 +56,23 @@ public class FileSystemBlobStoreService implements BlobStoreService
 {
     private static final long serialVersionUID = 1L;
     private String _strBasePath;
+    private String _strName;
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void setName( String strName ) 
+    {
+    	_strName = strName;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String getName(  )
+    {
+    	return _strName;
+    }
 
     /**
      * Sets the base directory
@@ -227,4 +244,20 @@ public class FileSystemBlobStoreService implements BlobStoreService
             throw new AppException( e.getMessage(  ), e );
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public String getBlobUrl( String strKey )
+    {
+    	return BlobStoreUtils.getDownloadUrl( getName(  ), strKey );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+	public String getFileUrl(String strKey) 
+	{
+		return BlobStoreUtils.getFileUrl( getName(  ), strKey );
+	}
 }

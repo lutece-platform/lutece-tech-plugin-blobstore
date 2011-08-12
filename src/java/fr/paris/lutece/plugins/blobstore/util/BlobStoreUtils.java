@@ -33,7 +33,16 @@
  */
 package fr.paris.lutece.plugins.blobstore.util;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+
+import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.util.signrequest.AbstractAuthenticator;
+import fr.paris.lutece.util.signrequest.RequestAuthenticator;
+import fr.paris.lutece.util.url.UrlItem;
 
 
 /**
@@ -43,6 +52,7 @@ import java.util.UUID;
  */
 public final class BlobStoreUtils
 {
+	public static final String BEAN_REQUEST_AUTHENTICATOR = "blobstore.requestAuthenticator";
     /**
      * Private constructor
      */
@@ -59,5 +69,78 @@ public final class BlobStoreUtils
         UUID key = UUID.randomUUID(  );
 
         return key.toString(  );
+    }
+    
+    /**
+     * Gets the file url
+     * @param strBlobStore the blob store
+     * @param strBlobKey the blob key
+     * @return the url
+     */
+    public static String getFileUrl( String strBlobStore, String strBlobKey )
+    {
+    	return getBlobUrl( strBlobStore, strBlobKey, BlobStoreConstants.JSP_DO_DOWNLOAD_FILE );
+    }
+    
+    /**
+     * Gets the downloadUrl
+     * @param strBlobStore the blobstore
+     * @param strBlobKey the key
+     * @return the url
+     */
+    public static String getDownloadUrl( String strBlobStore, String strBlobKey )
+    {
+    	return getBlobUrl( strBlobStore, strBlobKey, BlobStoreConstants.JSP_DO_DOWNLOAD_BLOB );
+    }
+    
+    /**
+     * Builds the blob url
+     * @param strBlobStore the blob store
+     * @param strBlobKey the blob key
+     * @param strJsp the jsp
+     * @return the blob url
+     */
+    private static String getBlobUrl( String strBlobStore, String strBlobKey, String strJsp )
+    {
+    	String strBaseUrl = AppPropertiesService.getProperty( BlobStoreConstants.PROPERTY_BASE_URL, AppPropertiesService.getProperty( BlobStoreConstants.PROPERTY_PROD_URL ) );
+    	String strBlobUrl;
+    	if ( strBaseUrl != null )
+    	{
+    		if ( !strBaseUrl.endsWith( "/" ) )
+    		{
+    			strBaseUrl += "/";
+    		}
+    		
+    		UrlItem urlItem = new UrlItem( strBaseUrl +  strJsp );
+    		urlItem.addParameter( BlobStoreConstants.PARAMETER_BLOB_STORE, strBlobStore );
+    		urlItem.addParameter( BlobStoreConstants.PARAMETER_BLOB_KEY, strBlobKey );
+    		
+    		List<String> listElements = new ArrayList<String>(  );
+            listElements.add( strBlobStore );
+            listElements.add( strBlobKey );
+            
+            String strTimestamp = Long.toString( new Date(  ).getTime(  ) );
+            String strSignature = getRequestAuthenticator(  ).buildSignature( listElements, strTimestamp );
+
+            urlItem.addParameter( BlobStoreConstants.PARAMETER_TIMESTAMP, strTimestamp );
+            urlItem.addParameter( BlobStoreConstants.PARAMETER_SIGNATURE, strSignature );
+            
+            strBlobUrl = urlItem.getUrl(  );
+    	}
+    	else
+    	{
+    		strBlobUrl = null;
+    	}
+    	
+    	return strBlobUrl;
+    }
+    
+    /**
+     * Gets the {@link RequestAuthenticator}
+     * @return the RequestAuthenticator
+     */
+    public static AbstractAuthenticator getRequestAuthenticator(  )
+    {
+    	return (AbstractAuthenticator) SpringContextService.getBean( BEAN_REQUEST_AUTHENTICATOR );
     }
 }

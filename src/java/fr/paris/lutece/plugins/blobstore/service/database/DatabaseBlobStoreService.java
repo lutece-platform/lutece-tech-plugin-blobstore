@@ -54,7 +54,25 @@ public class DatabaseBlobStoreService implements BlobStoreService
 {
     private static final long serialVersionUID = 1L;
     private static final String MESSAGE_COULD_NOT_CREATE_BLOB = "BlobStore Error when generating a new id blob";
-
+    
+    /** name defaulted to databaseBlobstore - only one can be supported by webapp */
+    private String _strName =  "databaseBlobstore";
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String getName(  )
+    {
+    	return _strName;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void setName( String strName )
+    {
+    	_strName = strName;
+    }
     /**
      * {@inheritDoc}
      */
@@ -161,5 +179,21 @@ public class DatabaseBlobStoreService implements BlobStoreService
     public InputStream getBlobInputStream( String strKey )
     {
         return DatabaseBlobStoreHome.findByPrimaryKeyInputStream( strKey );
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String getBlobUrl( String strKey )
+    {
+    	return BlobStoreUtils.getDownloadUrl( getName(  ), strKey );
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public String getFileUrl( String strKey ) 
+    {
+    	return BlobStoreUtils.getFileUrl( getName(  ), strKey );
     }
 }

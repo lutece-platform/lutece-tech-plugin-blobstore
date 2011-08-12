@@ -83,7 +83,7 @@ public class DatabaseBlobStoreServiceTest extends LuteceTestCase
         String strFileKey = service.store( bStore );
         File file = new File( strFilename );
 
-        String strMetadata = BlobStoreFileItem.buildFileMetadata( FILE_NAME, file.length(  ), strFileKey );
+        String strMetadata = BlobStoreFileItem.buildFileMetadata( FILE_NAME, file.length(  ), strFileKey, "text/plain" );
 
         String strMetadataKey = service.store( strMetadata.getBytes(  ) );
 
