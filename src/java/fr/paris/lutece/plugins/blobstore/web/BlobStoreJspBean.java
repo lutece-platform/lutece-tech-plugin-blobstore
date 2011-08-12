@@ -61,10 +61,10 @@ import fr.paris.lutece.util.filesystem.UploadUtil;
  */
 public class BlobStoreJspBean
 {	
-	private static final String PROPERTY_MESSAGE_NO_SUCH_BLOB = "";
-	private static final String PROPERTY_MESSAGE_ERROR_RETRIEVING_BLOB = "";
-	private static final String PROPERTY_MESSAGE_NO_SUCH_BLOBSTORE = "";
-	private static final String PROPERTY_MESSAGE_ACCESS_DENIED = "";
+	private static final String PROPERTY_MESSAGE_NO_SUCH_BLOB = "blobstore.download.noSuchBlob";
+	private static final String PROPERTY_MESSAGE_ERROR_RETRIEVING_BLOB = "blobstore.download.error";
+	private static final String PROPERTY_MESSAGE_NO_SUCH_BLOBSTORE = "blobstore.download.noSuchBlobStore";
+	private static final String PROPERTY_MESSAGE_ACCESS_DENIED = "blobstore.download.accessDenied";
 	
 	/**
 	 * Download a file : blob key is the metadata key
