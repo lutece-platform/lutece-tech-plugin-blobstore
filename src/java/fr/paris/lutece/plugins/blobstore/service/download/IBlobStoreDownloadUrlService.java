@@ -31,52 +31,27 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.blobstore.util;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
-import fr.paris.lutece.portal.service.spring.SpringContextService;
-import fr.paris.lutece.portal.service.util.AppPropertiesService;
-import fr.paris.lutece.util.signrequest.AbstractAuthenticator;
-import fr.paris.lutece.util.signrequest.RequestAuthenticator;
-import fr.paris.lutece.util.url.UrlItem;
-
+package fr.paris.lutece.plugins.blobstore.service.download;
 
 /**
- *
- * BlobStoreUtils
- *
+ * 
+ * Builds download Url. Useful when we want to share a http link, ftp link, or fylesystem link.
+ * @see JSPBlobStoreDownloadUrlService
  */
-public final class BlobStoreUtils
+public interface IBlobStoreDownloadUrlService
 {
-	public static final String BEAN_REQUEST_AUTHENTICATOR = "blobstore.requestAuthenticator";
-    /**
-     * Private constructor
-     */
-    private BlobStoreUtils(  )
-    {
-    }
-
-    /**
-     * Generate a new random ID blob
-     * @return a new random id blob
-     */
-    public static String generateNewIdBlob(  )
-    {
-        UUID key = UUID.randomUUID(  );
-
-        return key.toString(  );
-    }
-    
-    /**
-     * Gets the {@link RequestAuthenticator}
-     * @return the RequestAuthenticator
-     */
-    public static AbstractAuthenticator getRequestAuthenticator(  )
-    {
-    	return (AbstractAuthenticator) SpringContextService.getBean( BEAN_REQUEST_AUTHENTICATOR );
-    }
+	/**
+	 * A file URL
+	 * @param strBlobStore the blobstore namle
+	 * @param strBlobKey the blobstore key
+	 * @return the file url
+	 */
+	String getFileUrl( String strBlobStore, String strBlobKey );
+	/**
+	 * A blob url
+	 * @param strBlobStore the blobstore namle
+	 * @param strBlobKey the blobstore key
+	 * @return the blob url
+	 */
+	String getDownloadUrl( String strBlobStore, String strBlobKey );
 }

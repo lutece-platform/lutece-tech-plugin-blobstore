@@ -36,6 +36,8 @@ package fr.paris.lutece.plugins.blobstore.service.database;
 import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.database.DatabaseBlobStoreHome;
+import fr.paris.lutece.plugins.blobstore.service.download.IBlobStoreDownloadUrlService;
+import fr.paris.lutece.plugins.blobstore.service.download.JSPBlobStoreDownloadUrlService;
 import fr.paris.lutece.plugins.blobstore.util.BlobStoreUtils;
 import fr.paris.lutece.portal.service.blobstore.BlobStoreService;
 import fr.paris.lutece.portal.service.util.AppLogService;
@@ -47,7 +49,7 @@ import java.io.InputStream;
 
 /**
  *
- * DatabaseBlobStoreService
+ * DatabaseBlobStoreService.
  *
  */
 public class DatabaseBlobStoreService implements BlobStoreService
@@ -57,6 +59,26 @@ public class DatabaseBlobStoreService implements BlobStoreService
     
     /** name defaulted to databaseBlobstore - only one can be supported by webapp */
     private String _strName =  "databaseBlobstore";
+    /** Uses {@link JSPBlobStoreDownloadUrlService} as default one */
+    private IBlobStoreDownloadUrlService _downloadUrlService = new JSPBlobStoreDownloadUrlService(  );
+    
+    /**
+     * Gets the downloadService
+     * @return the downloadService
+     */
+    public IBlobStoreDownloadUrlService getDownloadUrlService(  )
+    {
+    	return _downloadUrlService;
+    }
+    
+    /**
+     * Sets the downloadService
+     * @param downloadUrlService downloadService
+     */
+    public void setDownloadUrlService( IBlobStoreDownloadUrlService downloadUrlService )
+    {
+    	_downloadUrlService = downloadUrlService;
+    }
     
     /**
      * {@inheritDoc}
@@ -186,7 +208,7 @@ public class DatabaseBlobStoreService implements BlobStoreService
      */
     public String getBlobUrl( String strKey )
     {
-    	return BlobStoreUtils.getDownloadUrl( getName(  ), strKey );
+    	return _downloadUrlService.getDownloadUrl( getName(  ), strKey );
     }
     
     /**
@@ -194,6 +216,6 @@ public class DatabaseBlobStoreService implements BlobStoreService
      */
     public String getFileUrl( String strKey ) 
     {
-    	return BlobStoreUtils.getFileUrl( getName(  ), strKey );
+    	return _downloadUrlService.getFileUrl( getName(  ), strKey );
     }
 }
