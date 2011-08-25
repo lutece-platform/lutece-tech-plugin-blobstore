@@ -33,16 +33,11 @@
  */
 package fr.paris.lutece.plugins.blobstore.util;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
 import fr.paris.lutece.portal.service.spring.SpringContextService;
-import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.signrequest.AbstractAuthenticator;
 import fr.paris.lutece.util.signrequest.RequestAuthenticator;
-import fr.paris.lutece.util.url.UrlItem;
+
+import java.util.UUID;
 
 
 /**
@@ -52,7 +47,8 @@ import fr.paris.lutece.util.url.UrlItem;
  */
 public final class BlobStoreUtils
 {
-	public static final String BEAN_REQUEST_AUTHENTICATOR = "blobstore.requestAuthenticator";
+    public static final String BEAN_REQUEST_AUTHENTICATOR = "blobstore.requestAuthenticator";
+
     /**
      * Private constructor
      */
@@ -70,13 +66,13 @@ public final class BlobStoreUtils
 
         return key.toString(  );
     }
-    
+
     /**
      * Gets the {@link RequestAuthenticator}
      * @return the RequestAuthenticator
      */
     public static AbstractAuthenticator getRequestAuthenticator(  )
     {
-    	return (AbstractAuthenticator) SpringContextService.getBean( BEAN_REQUEST_AUTHENTICATOR );
+        return (AbstractAuthenticator) SpringContextService.getBean( BEAN_REQUEST_AUTHENTICATOR );
     }
 }
