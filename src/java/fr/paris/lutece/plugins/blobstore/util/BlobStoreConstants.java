@@ -33,29 +33,28 @@
  */
 package fr.paris.lutece.plugins.blobstore.util;
 
+
 /**
- * 
+ *
  * BlobstoreConstants
  *
  */
-public final class BlobStoreConstants 
+public final class BlobStoreConstants
 {
-	
-	public static final String PARAMETER_TIMESTAMP = "timestamp";
-	public static final String PARAMETER_SIGNATURE = "signature";
-	public static final String PARAMETER_BLOB_KEY = "blob_key";
-	public static final String PARAMETER_BLOB_STORE = "blobstore";
-	public static final String PROPERTY_BASE_URL = "lutece.base.url";
-	public static final String PROPERTY_PROD_URL = "lutece.prod.url";
-	public static final String JSP_DO_DOWNLOAD_BLOB = "jsp/site/plugins/blobstore/DoDownloadBlob.jsp";
-	public static final String JSP_DO_DOWNLOAD_FILE = "jsp/site/plugins/blobstore/DoDownloadFile.jsp";
+    public static final String PARAMETER_TIMESTAMP = "timestamp";
+    public static final String PARAMETER_SIGNATURE = "signature";
+    public static final String PARAMETER_BLOB_KEY = "blob_key";
+    public static final String PARAMETER_BLOB_STORE = "blobstore";
+    public static final String PROPERTY_BASE_URL = "lutece.base.url";
+    public static final String PROPERTY_PROD_URL = "lutece.prod.url";
+    public static final String JSP_DO_DOWNLOAD_BLOB = "jsp/site/plugins/blobstore/DoDownloadBlob.jsp";
+    public static final String JSP_DO_DOWNLOAD_FILE = "jsp/site/plugins/blobstore/DoDownloadFile.jsp";
 
-
-	/**
-	 * Empty constructor
-	 */
-	private BlobStoreConstants()
-	{
-		// nothing
-	}
+    /**
+     * Empty constructor
+     */
+    private BlobStoreConstants(  )
+    {
+        // nothing
+    }
 }
