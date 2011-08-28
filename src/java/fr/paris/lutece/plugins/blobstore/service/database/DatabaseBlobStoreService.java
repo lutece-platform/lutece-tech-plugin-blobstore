@@ -56,45 +56,47 @@ public class DatabaseBlobStoreService implements BlobStoreService
 {
     private static final long serialVersionUID = 1L;
     private static final String MESSAGE_COULD_NOT_CREATE_BLOB = "BlobStore Error when generating a new id blob";
-    
+
     /** name defaulted to databaseBlobstore - only one can be supported by webapp */
-    private String _strName =  "databaseBlobstore";
+    private String _strName = "databaseBlobstore";
+
     /** Uses {@link JSPBlobStoreDownloadUrlService} as default one */
     private IBlobStoreDownloadUrlService _downloadUrlService = new JSPBlobStoreDownloadUrlService(  );
-    
+
     /**
      * Gets the downloadService
      * @return the downloadService
      */
     public IBlobStoreDownloadUrlService getDownloadUrlService(  )
     {
-    	return _downloadUrlService;
+        return _downloadUrlService;
     }
-    
+
     /**
      * Sets the downloadService
      * @param downloadUrlService downloadService
      */
     public void setDownloadUrlService( IBlobStoreDownloadUrlService downloadUrlService )
     {
-    	_downloadUrlService = downloadUrlService;
+        _downloadUrlService = downloadUrlService;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public String getName(  )
     {
-    	return _strName;
+        return _strName;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public void setName( String strName )
     {
-    	_strName = strName;
+        _strName = strName;
     }
+
     /**
      * {@inheritDoc}
      */
@@ -202,20 +204,20 @@ public class DatabaseBlobStoreService implements BlobStoreService
     {
         return DatabaseBlobStoreHome.findByPrimaryKeyInputStream( strKey );
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public String getBlobUrl( String strKey )
     {
-    	return _downloadUrlService.getDownloadUrl( getName(  ), strKey );
+        return _downloadUrlService.getDownloadUrl( getName(  ), strKey );
     }
-    
+
     /**
      * {@inheritDoc}
      */
-    public String getFileUrl( String strKey ) 
+    public String getFileUrl( String strKey )
     {
-    	return _downloadUrlService.getFileUrl( getName(  ), strKey );
+        return _downloadUrlService.getFileUrl( getName(  ), strKey );
     }
 }

@@ -48,6 +48,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+
 /**
  *
  * FileSystemBlobStoreService
@@ -58,42 +59,42 @@ public class FileSystemBlobStoreService implements BlobStoreService
     private static final long serialVersionUID = 1L;
     private String _strBasePath;
     private String _strName;
+
     /** Uses {@link JSPBlobStoreDownloadUrlService} as default one */
     private IBlobStoreDownloadUrlService _downloadUrlService = new JSPBlobStoreDownloadUrlService(  );
-    
+
     /**
      * Gets the downloadService.
      * @return the downloadService
      */
     public IBlobStoreDownloadUrlService getDownloadUrlService(  )
     {
-    	return _downloadUrlService;
+        return _downloadUrlService;
     }
-    
+
     /**
      * Sets the downloadService
      * @param downloadUrlService downloadService
      */
     public void setDownloadUrlService( IBlobStoreDownloadUrlService downloadUrlService )
     {
-    	_downloadUrlService = downloadUrlService;
+        _downloadUrlService = downloadUrlService;
     }
 
-    
     /**
      * {@inheritDoc}
      */
-    public void setName( String strName ) 
+    public void setName( String strName )
     {
-    	_strName = strName;
+        _strName = strName;
     }
-    
+
     /**
      * {@inheritDoc}
      */
     public String getName(  )
     {
-    	return _strName;
+        return _strName;
     }
 
     /**
@@ -272,14 +273,14 @@ public class FileSystemBlobStoreService implements BlobStoreService
      */
     public String getBlobUrl( String strKey )
     {
-    	return _downloadUrlService.getDownloadUrl( getName(  ), strKey );
+        return _downloadUrlService.getDownloadUrl( getName(  ), strKey );
     }
 
     /**
      * {@inheritDoc}
      */
-	public String getFileUrl(String strKey) 
-	{
-		return _downloadUrlService.getFileUrl( getName(  ), strKey );
-	}
+    public String getFileUrl( String strKey )
+    {
+        return _downloadUrlService.getFileUrl( getName(  ), strKey );
+    }
 }
