@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document>
-	<properties>
-		<title>Plugin</title>
-	</properties>
-	<body>
-		<section name="Plugin">
-			<subsection name="Introduction">
-			</subsection>
-		</section>
-	</body>
+    <properties>
+        <title>Introduction</title>
+    </properties>
+    <body>
+        <section name="Descriptif du plugin">
+            <subsection name="Introduction">
+                <p>
+                	Ce plugin permet de stocker des donn&#233;es de taille importante, que ce soit en base de donn&#233;es ou en fichier syst&#232;me.
+                </p>
+            </subsection>
+        </section>
+    </body>
 </document>

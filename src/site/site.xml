@@ -6,6 +6,11 @@
 		</links>
 		<menu name="Overview">
 			<item name="Introduction" href="index.html" />
+			<item name="Configuration" href="configuration.html" />
+		</menu>
+		<menu name="Downloads" inherit="bottom">
+			<item name="Released versions" href="../../stable_builds/plugins/plugin-blobstore/"/>
+			<item name="Nightly builds" href="../../nightly_builds/plugins/plugin-blobstore/" />
 		</menu>
 		<menu ref="reports" />
 	</body>
