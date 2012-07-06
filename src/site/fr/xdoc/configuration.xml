@@ -85,7 +85,7 @@ public class MyPluginService
 &lt;/bean&gt;
 </pre>
         	</subsection>
-        	<subsection name="Etape 2 : Impl&#233;mentation des m&#233thodes CRUD sur blobstore">
+        	<subsection name="Etape 2 : Impl&#233;mentation des m&#233;thodes CRUD sur blobstore">
         		<p>
         			L'API <strong>BlobStoreService</strong> offre de nombreuses fonctionnalit&#233;es permettant de r&#233;aliser
         			les op&#233;rations basiques de fa&#231;on simple :
