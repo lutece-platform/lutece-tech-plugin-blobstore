@@ -33,30 +33,32 @@
  */
 package fr.paris.lutece.plugins.blobstore.service.download;
 
-import fr.paris.lutece.plugins.blobstore.util.BlobStoreConstants;
-import fr.paris.lutece.plugins.blobstore.util.BlobStoreUtils;
-import fr.paris.lutece.portal.service.util.AppPropertiesService;
-import fr.paris.lutece.util.url.UrlItem;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import fr.paris.lutece.plugins.blobstore.util.BlobStoreConstants;
+import fr.paris.lutece.plugins.blobstore.util.BlobStoreLibConstants;
+import fr.paris.lutece.plugins.blobstore.util.BlobStoreUtils;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.util.url.UrlItem;
+
 
 /**
  * Uses JSP to serve file.
- *
+ * 
  */
 public class JSPBlobStoreDownloadUrlService implements IBlobStoreDownloadUrlService
 {
     private static final long serialVersionUID = 1L;
 
     /**
-    * Gets the file url
-    * @param strBlobStore the blob store
-    * @param strBlobKey the blob key
-    * @return the url
-    */
+     * Gets the file url
+     * @param strBlobStore the blob store
+     * @param strBlobKey the blob key
+     * @return the url
+     */
+    @Override
     public String getFileUrl( String strBlobStore, String strBlobKey )
     {
         return getBlobUrl( strBlobStore, strBlobKey, BlobStoreConstants.JSP_DO_DOWNLOAD_FILE );
@@ -68,6 +70,7 @@ public class JSPBlobStoreDownloadUrlService implements IBlobStoreDownloadUrlServ
      * @param strBlobKey the key
      * @return the url
      */
+    @Override
     public String getDownloadUrl( String strBlobStore, String strBlobKey )
     {
         return getBlobUrl( strBlobStore, strBlobKey, BlobStoreConstants.JSP_DO_DOWNLOAD_BLOB );
@@ -82,8 +85,8 @@ public class JSPBlobStoreDownloadUrlService implements IBlobStoreDownloadUrlServ
      */
     private static String getBlobUrl( String strBlobStore, String strBlobKey, String strJsp )
     {
-        String strBaseUrl = AppPropertiesService.getProperty( BlobStoreConstants.PROPERTY_BASE_URL,
-                AppPropertiesService.getProperty( BlobStoreConstants.PROPERTY_PROD_URL ) );
+        String strBaseUrl = AppPropertiesService.getProperty( BlobStoreLibConstants.PROPERTY_BASE_URL,
+                AppPropertiesService.getProperty( BlobStoreLibConstants.PROPERTY_PROD_URL ) );
         String strBlobUrl;
 
         if ( strBaseUrl != null )
@@ -94,20 +97,20 @@ public class JSPBlobStoreDownloadUrlService implements IBlobStoreDownloadUrlServ
             }
 
             UrlItem urlItem = new UrlItem( strBaseUrl + strJsp );
-            urlItem.addParameter( BlobStoreConstants.PARAMETER_BLOB_STORE, strBlobStore );
-            urlItem.addParameter( BlobStoreConstants.PARAMETER_BLOB_KEY, strBlobKey );
+            urlItem.addParameter( BlobStoreLibConstants.PARAMETER_BLOB_STORE, strBlobStore );
+            urlItem.addParameter( BlobStoreLibConstants.PARAMETER_BLOB_KEY, strBlobKey );
 
-            List<String> listElements = new ArrayList<String>(  );
+            List<String> listElements = new ArrayList<String>( );
             listElements.add( strBlobStore );
             listElements.add( strBlobKey );
 
-            String strTimestamp = Long.toString( new Date(  ).getTime(  ) );
-            String strSignature = BlobStoreUtils.getRequestAuthenticator(  ).buildSignature( listElements, strTimestamp );
+            String strTimestamp = Long.toString( new Date( ).getTime( ) );
+            String strSignature = BlobStoreUtils.getRequestAuthenticator( ).buildSignature( listElements, strTimestamp );
 
             urlItem.addParameter( BlobStoreConstants.PARAMETER_TIMESTAMP, strTimestamp );
             urlItem.addParameter( BlobStoreConstants.PARAMETER_SIGNATURE, strSignature );
 
-            strBlobUrl = urlItem.getUrl(  );
+            strBlobUrl = urlItem.getUrl( );
         }
         else
         {

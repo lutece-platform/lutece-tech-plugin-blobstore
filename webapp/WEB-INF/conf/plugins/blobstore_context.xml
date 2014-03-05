@@ -5,6 +5,10 @@
 	<!-- DAO -->
 	<bean id="blobstore.blobStoreDAO" class="fr.paris.lutece.plugins.blobstore.business.database.DatabaseBlobStoreDAO" />
 	<bean id="blobstore.fileSystemBlobStoreDAO" class="fr.paris.lutece.plugins.blobstore.business.filesystem.FileSystemBlobStoreDAO" />
+
+    <!-- Services -->  
+    <bean id="blobstore.databaseBlobStoreHome" class="fr.paris.lutece.plugins.blobstore.business.database.DatabaseBlobStoreHome" />
+    <bean id="blobstore.fileSystemBlobStoreHome" class="fr.paris.lutece.plugins.blobstore.business.filesystem.FileSystemBlobStoreHome" />
 	
 	<bean id="blobstore.hashService" class="fr.paris.lutece.util.signrequest.security.Sha1HashService" />
 	<bean id="blobstore.requestAuthenticator" class="fr.paris.lutece.util.signrequest.RequestHashAuthenticator" >

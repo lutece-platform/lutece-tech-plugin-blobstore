@@ -33,41 +33,43 @@
  */
 package fr.paris.lutece.plugins.blobstore.service.filesystem;
 
-import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
-import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
-import fr.paris.lutece.plugins.blobstore.business.filesystem.FileAlreadyExistsException;
-import fr.paris.lutece.plugins.blobstore.business.filesystem.FileSystemBlobStoreHome;
-import fr.paris.lutece.plugins.blobstore.service.download.IBlobStoreDownloadUrlService;
-import fr.paris.lutece.plugins.blobstore.service.download.JSPBlobStoreDownloadUrlService;
-import fr.paris.lutece.plugins.blobstore.util.BlobStoreUtils;
-import fr.paris.lutece.portal.service.blobstore.BlobStoreService;
-import fr.paris.lutece.portal.service.util.AppException;
-import fr.paris.lutece.portal.service.util.AppLogService;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
+import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
+import fr.paris.lutece.plugins.blobstore.business.filesystem.FileAlreadyExistsException;
+import fr.paris.lutece.plugins.blobstore.business.filesystem.FileSystemBlobStoreHome;
+import fr.paris.lutece.plugins.blobstore.business.filesystem.IFileSystemBlobStoreHome;
+import fr.paris.lutece.plugins.blobstore.service.IBlobStoreService;
+import fr.paris.lutece.plugins.blobstore.service.download.IBlobStoreDownloadUrlService;
+import fr.paris.lutece.plugins.blobstore.service.download.JSPBlobStoreDownloadUrlService;
+import fr.paris.lutece.plugins.blobstore.util.BlobStoreLibUtils;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.util.AppException;
+import fr.paris.lutece.portal.service.util.AppLogService;
+
 
 /**
- *
+ * 
  * FileSystemBlobStoreService
- *
+ * 
  */
-public class FileSystemBlobStoreService implements BlobStoreService
+public class FileSystemBlobStoreService implements IBlobStoreService
 {
     private static final long serialVersionUID = 1L;
     private String _strBasePath;
     private String _strName;
 
     /** Uses {@link JSPBlobStoreDownloadUrlService} as default one */
-    private IBlobStoreDownloadUrlService _downloadUrlService = new JSPBlobStoreDownloadUrlService(  );
+    private IBlobStoreDownloadUrlService _downloadUrlService = new JSPBlobStoreDownloadUrlService( );
 
     /**
      * Gets the downloadService.
      * @return the downloadService
      */
-    public IBlobStoreDownloadUrlService getDownloadUrlService(  )
+    public IBlobStoreDownloadUrlService getDownloadUrlService( )
     {
         return _downloadUrlService;
     }
@@ -84,6 +86,7 @@ public class FileSystemBlobStoreService implements BlobStoreService
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setName( String strName )
     {
         _strName = strName;
@@ -92,7 +95,8 @@ public class FileSystemBlobStoreService implements BlobStoreService
     /**
      * {@inheritDoc}
      */
-    public String getName(  )
+    @Override
+    public String getName( )
     {
         return _strName;
     }
@@ -120,7 +124,7 @@ public class FileSystemBlobStoreService implements BlobStoreService
      * Gets the base directory
      * @return the base directory
      */
-    public String getBasePath(  )
+    public String getBasePath( )
     {
         return _strBasePath;
     }
@@ -128,51 +132,60 @@ public class FileSystemBlobStoreService implements BlobStoreService
     /**
      * {@inheritDoc}
      */
+    @Override
     public void delete( String strKey )
     {
         try
         {
-            FileSystemBlobStoreHome.remove( strKey, getBasePath(  ) );
+            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService
+                    .getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
+            fileSystemBlobStoreHome.remove( strKey, getBasePath( ) );
         }
         catch ( IOException e )
         {
-            throw new AppException( e.getMessage(  ), e );
+            throw new AppException( e.getMessage( ), e );
         }
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public byte[] getBlob( String strKey )
     {
         BytesBlobStore blob;
 
         try
         {
-            blob = FileSystemBlobStoreHome.findByPrimaryKey( strKey, getBasePath(  ) );
+            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService
+                    .getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
+            blob = fileSystemBlobStoreHome.findByPrimaryKey( strKey, getBasePath( ) );
         }
         catch ( IOException e )
         {
-            AppLogService.error( e.getMessage(  ), e );
+            AppLogService.error( e.getMessage( ), e );
 
             return null;
         }
 
-        return ( blob == null ) ? null : blob.getValue(  );
+        return ( blob == null ) ? null : blob.getValue( );
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public InputStream getBlobInputStream( String strKey )
     {
         try
         {
-            return FileSystemBlobStoreHome.findByPrimaryKeyInputStream( strKey, getBasePath(  ) );
+            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService
+                    .getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
+            return fileSystemBlobStoreHome.findByPrimaryKeyInputStream( strKey, getBasePath( ) );
         }
         catch ( IOException ioe )
         {
-            AppLogService.error( ioe.getMessage(  ), ioe );
+            AppLogService.error( ioe.getMessage( ), ioe );
 
             return null;
         }
@@ -181,24 +194,27 @@ public class FileSystemBlobStoreService implements BlobStoreService
     /**
      * {@inheritDoc}
      */
+    @Override
     public String store( byte[] blob )
     {
-        String strKey = BlobStoreUtils.generateNewIdBlob(  );
-        BytesBlobStore blobStore = new BytesBlobStore(  );
+        String strKey = BlobStoreLibUtils.generateNewIdBlob( );
+        BytesBlobStore blobStore = new BytesBlobStore( );
         blobStore.setId( strKey );
         blobStore.setValue( blob );
 
         try
         {
-            FileSystemBlobStoreHome.create( blobStore, getBasePath(  ) );
+            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService
+                    .getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
+            fileSystemBlobStoreHome.create( blobStore, getBasePath( ) );
         }
         catch ( IOException e )
         {
-            throw new AppException( e.getMessage(  ), e );
+            throw new AppException( e.getMessage( ), e );
         }
         catch ( FileAlreadyExistsException fe )
         {
-            throw new AppException( fe.getMessage(  ), fe );
+            throw new AppException( fe.getMessage( ), fe );
         }
 
         return strKey;
@@ -207,24 +223,27 @@ public class FileSystemBlobStoreService implements BlobStoreService
     /**
      * {@inheritDoc}
      */
+    @Override
     public String storeInputStream( InputStream inputStream )
     {
-        String strKey = BlobStoreUtils.generateNewIdBlob(  );
-        InputStreamBlobStore blob = new InputStreamBlobStore(  );
+        String strKey = BlobStoreLibUtils.generateNewIdBlob( );
+        InputStreamBlobStore blob = new InputStreamBlobStore( );
         blob.setId( strKey );
         blob.setInputStream( inputStream );
 
         try
         {
-            FileSystemBlobStoreHome.createInputStream( blob, getBasePath(  ) );
+            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService
+                    .getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
+            fileSystemBlobStoreHome.createInputStream( blob, getBasePath( ) );
         }
         catch ( IOException e )
         {
-            throw new AppException( e.getMessage(  ), e );
+            throw new AppException( e.getMessage( ), e );
         }
         catch ( FileAlreadyExistsException fe )
         {
-            throw new AppException( fe.getMessage(  ), fe );
+            throw new AppException( fe.getMessage( ), fe );
         }
 
         return strKey;
@@ -233,54 +252,62 @@ public class FileSystemBlobStoreService implements BlobStoreService
     /**
      * {@inheritDoc}
      */
+    @Override
     public void update( String strKey, byte[] blob )
     {
-        BytesBlobStore blobStore = new BytesBlobStore(  );
+        BytesBlobStore blobStore = new BytesBlobStore( );
         blobStore.setId( strKey );
         blobStore.setValue( blob );
 
         try
         {
-            FileSystemBlobStoreHome.update( blobStore, getBasePath(  ) );
+            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService
+                    .getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
+            fileSystemBlobStoreHome.update( blobStore, getBasePath( ) );
         }
         catch ( IOException e )
         {
-            throw new AppException( e.getMessage(  ), e );
+            throw new AppException( e.getMessage( ), e );
         }
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void updateInputStream( String strKey, InputStream inputStream )
     {
-        InputStreamBlobStore blob = new InputStreamBlobStore(  );
+        InputStreamBlobStore blob = new InputStreamBlobStore( );
         blob.setId( strKey );
         blob.setInputStream( inputStream );
 
         try
         {
-            FileSystemBlobStoreHome.updateInputStream( blob, getBasePath(  ) );
+            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService
+                    .getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
+            fileSystemBlobStoreHome.updateInputStream( blob, getBasePath( ) );
         }
         catch ( IOException e )
         {
-            throw new AppException( e.getMessage(  ), e );
+            throw new AppException( e.getMessage( ), e );
         }
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getBlobUrl( String strKey )
     {
-        return _downloadUrlService.getDownloadUrl( getName(  ), strKey );
+        return _downloadUrlService.getDownloadUrl( getName( ), strKey );
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getFileUrl( String strKey )
     {
-        return _downloadUrlService.getFileUrl( getName(  ), strKey );
+        return _downloadUrlService.getFileUrl( getName( ), strKey );
     }
 }
