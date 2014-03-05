@@ -33,6 +33,10 @@
  */
 package fr.paris.lutece.plugins.blobstore.service.filesystem;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
 import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.filesystem.FileAlreadyExistsException;
@@ -45,10 +49,6 @@ import fr.paris.lutece.plugins.blobstore.util.BlobStoreUtils;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppLogService;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 
 
 /**
@@ -69,21 +69,21 @@ public class FileSystemBlobStoreService implements IBlobStoreService
     private Integer _intDepth = 0;
 
     /** Uses {@link JSPBlobStoreDownloadUrlService} as default one. */
-    private IBlobStoreDownloadUrlService _downloadUrlService = new JSPBlobStoreDownloadUrlService(  );
+    private IBlobStoreDownloadUrlService _downloadUrlService = new JSPBlobStoreDownloadUrlService( );
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see fr.paris.lutece.plugins.blobstore.service.IBlobStoreService#
-     * getDownloadUrlService()
+    /**
+     * Gets the downloadService.
+     * @return the downloadService
      */
-    @Override
-    public IBlobStoreDownloadUrlService getDownloadUrlService(  )
+    public IBlobStoreDownloadUrlService getDownloadUrlService( )
     {
         return _downloadUrlService;
     }
 
-    @Override
+    /**
+     * Sets the downloadService
+     * @param downloadUrlService downloadService
+     */
     public void setDownloadUrlService( final IBlobStoreDownloadUrlService downloadUrlService )
     {
         _downloadUrlService = downloadUrlService;
@@ -91,7 +91,7 @@ public class FileSystemBlobStoreService implements IBlobStoreService
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.paris.lutece.portal.service.blobstore.BlobStoreService#setName(java
      * .lang.String)
@@ -104,18 +104,18 @@ public class FileSystemBlobStoreService implements IBlobStoreService
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see fr.paris.lutece.portal.service.blobstore.BlobStoreService#getName()
      */
     @Override
-    public String getName(  )
+    public String getName( )
     {
         return _strName;
     }
 
     /**
      * Sets the base directory.
-     *
+     * 
      * @param strBasePath
      *            base path
      */
@@ -136,17 +136,17 @@ public class FileSystemBlobStoreService implements IBlobStoreService
 
     /**
      * Gets the base directory.
-     *
+     * 
      * @return the base directory
      */
-    public String getBasePath(  )
+    public String getBasePath( )
     {
         return _strBasePath;
     }
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.paris.lutece.portal.service.blobstore.BlobStoreService#delete(java
      * .lang.String)
@@ -156,18 +156,19 @@ public class FileSystemBlobStoreService implements IBlobStoreService
     {
         try
         {
-            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService.getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
-            fileSystemBlobStoreHome.remove( strKey, getBasePath(  ), getDepth(  ) );
+            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService
+                    .getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
+            fileSystemBlobStoreHome.remove( strKey, getBasePath( ), getDepth( ) );
         }
         catch ( final IOException e )
         {
-            throw new AppException( e.getMessage(  ), e );
+            throw new AppException( e.getMessage( ), e );
         }
     }
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.paris.lutece.portal.service.blobstore.BlobStoreService#getBlob(java
      * .lang.String)
@@ -179,22 +180,23 @@ public class FileSystemBlobStoreService implements IBlobStoreService
 
         try
         {
-            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService.getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
-            blob = fileSystemBlobStoreHome.findByPrimaryKey( strKey, getBasePath(  ), getDepth(  ) );
+            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService
+                    .getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
+            blob = fileSystemBlobStoreHome.findByPrimaryKey( strKey, getBasePath( ), getDepth( ) );
         }
         catch ( final IOException e )
         {
-            AppLogService.error( e.getMessage(  ), e );
+            AppLogService.error( e.getMessage( ), e );
 
             return null;
         }
 
-        return ( blob == null ) ? null : blob.getValue(  );
+        return ( blob == null ) ? null : blob.getValue( );
     }
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.paris.lutece.portal.service.blobstore.BlobStoreService#getBlobInputStream
      * (java.lang.String)
@@ -204,13 +206,14 @@ public class FileSystemBlobStoreService implements IBlobStoreService
     {
         try
         {
-            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService.getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
+            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService
+                    .getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
 
-            return fileSystemBlobStoreHome.findByPrimaryKeyInputStream( strKey, getBasePath(  ), getDepth(  ) );
+            return fileSystemBlobStoreHome.findByPrimaryKeyInputStream( strKey, getBasePath( ), getDepth( ) );
         }
         catch ( final IOException ioe )
         {
-            AppLogService.error( ioe.getMessage(  ), ioe );
+            AppLogService.error( ioe.getMessage( ), ioe );
 
             return null;
         }
@@ -218,30 +221,31 @@ public class FileSystemBlobStoreService implements IBlobStoreService
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.paris.lutece.portal.service.blobstore.BlobStoreService#store(byte[])
      */
     @Override
     public String store( final byte[] blob )
     {
-        final String strKey = BlobStoreUtils.generateNewIdBlob(  );
-        final BytesBlobStore blobStore = new BytesBlobStore(  );
+        final String strKey = BlobStoreUtils.generateNewIdBlob( );
+        final BytesBlobStore blobStore = new BytesBlobStore( );
         blobStore.setId( strKey );
         blobStore.setValue( blob );
 
         try
         {
-            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService.getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
-            fileSystemBlobStoreHome.create( blobStore, getBasePath(  ), getDepth(  ) );
+            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService
+                    .getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
+            fileSystemBlobStoreHome.create( blobStore, getBasePath( ), getDepth( ) );
         }
         catch ( final IOException e )
         {
-            throw new AppException( e.getMessage(  ), e );
+            throw new AppException( e.getMessage( ), e );
         }
         catch ( final FileAlreadyExistsException fe )
         {
-            throw new AppException( fe.getMessage(  ), fe );
+            throw new AppException( fe.getMessage( ), fe );
         }
 
         return strKey;
@@ -249,7 +253,7 @@ public class FileSystemBlobStoreService implements IBlobStoreService
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.paris.lutece.portal.service.blobstore.BlobStoreService#storeInputStream
      * (java.io.InputStream)
@@ -257,23 +261,24 @@ public class FileSystemBlobStoreService implements IBlobStoreService
     @Override
     public String storeInputStream( final InputStream inputStream )
     {
-        final String strKey = BlobStoreUtils.generateNewIdBlob(  );
-        final InputStreamBlobStore blob = new InputStreamBlobStore(  );
+        final String strKey = BlobStoreUtils.generateNewIdBlob( );
+        final InputStreamBlobStore blob = new InputStreamBlobStore( );
         blob.setId( strKey );
         blob.setInputStream( inputStream );
 
         try
         {
-            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService.getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
-            fileSystemBlobStoreHome.createInputStream( blob, getBasePath(  ), getDepth(  ) );
+            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService
+                    .getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
+            fileSystemBlobStoreHome.createInputStream( blob, getBasePath( ), getDepth( ) );
         }
         catch ( final IOException e )
         {
-            throw new AppException( e.getMessage(  ), e );
+            throw new AppException( e.getMessage( ), e );
         }
         catch ( final FileAlreadyExistsException fe )
         {
-            throw new AppException( fe.getMessage(  ), fe );
+            throw new AppException( fe.getMessage( ), fe );
         }
 
         return strKey;
@@ -281,7 +286,7 @@ public class FileSystemBlobStoreService implements IBlobStoreService
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.paris.lutece.portal.service.blobstore.BlobStoreService#update(java
      * .lang.String, byte[])
@@ -289,24 +294,25 @@ public class FileSystemBlobStoreService implements IBlobStoreService
     @Override
     public void update( final String strKey, final byte[] blob )
     {
-        final BytesBlobStore blobStore = new BytesBlobStore(  );
+        final BytesBlobStore blobStore = new BytesBlobStore( );
         blobStore.setId( strKey );
         blobStore.setValue( blob );
 
         try
         {
-            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService.getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
-            fileSystemBlobStoreHome.update( blobStore, getBasePath(  ), getDepth(  ) );
+            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService
+                    .getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
+            fileSystemBlobStoreHome.update( blobStore, getBasePath( ), getDepth( ) );
         }
         catch ( final IOException e )
         {
-            throw new AppException( e.getMessage(  ), e );
+            throw new AppException( e.getMessage( ), e );
         }
     }
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.paris.lutece.portal.service.blobstore.BlobStoreService#updateInputStream
      * (java.lang.String, java.io.InputStream)
@@ -314,24 +320,25 @@ public class FileSystemBlobStoreService implements IBlobStoreService
     @Override
     public void updateInputStream( final String strKey, final InputStream inputStream )
     {
-        final InputStreamBlobStore blob = new InputStreamBlobStore(  );
+        final InputStreamBlobStore blob = new InputStreamBlobStore( );
         blob.setId( strKey );
         blob.setInputStream( inputStream );
 
         try
         {
-            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService.getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
-            fileSystemBlobStoreHome.updateInputStream( blob, getBasePath(  ), getDepth(  ) );
+            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService
+                    .getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
+            fileSystemBlobStoreHome.updateInputStream( blob, getBasePath( ), getDepth( ) );
         }
         catch ( final IOException e )
         {
-            throw new AppException( e.getMessage(  ), e );
+            throw new AppException( e.getMessage( ), e );
         }
     }
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.paris.lutece.portal.service.blobstore.BlobStoreService#getBlobUrl(
      * java.lang.String)
@@ -339,12 +346,12 @@ public class FileSystemBlobStoreService implements IBlobStoreService
     @Override
     public String getBlobUrl( final String strKey )
     {
-        return _downloadUrlService.getDownloadUrl( getName(  ), strKey );
+        return _downloadUrlService.getDownloadUrl( getName( ), strKey );
     }
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.paris.lutece.portal.service.blobstore.BlobStoreService#getFileUrl(
      * java.lang.String)
@@ -352,22 +359,22 @@ public class FileSystemBlobStoreService implements IBlobStoreService
     @Override
     public String getFileUrl( final String strKey )
     {
-        return _downloadUrlService.getFileUrl( getName(  ), strKey );
+        return _downloadUrlService.getFileUrl( getName( ), strKey );
     }
 
     /**
      * Gets the depth.
-     *
+     * 
      * @return the depth
      */
-    public Integer getDepth(  )
+    public Integer getDepth( )
     {
         return _intDepth;
     }
 
     /**
      * Sets the depth.
-     *
+     * 
      * @param depth
      *            the new depth
      */
