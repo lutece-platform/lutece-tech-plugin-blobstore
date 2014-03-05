@@ -33,59 +33,59 @@
  */
 package fr.paris.lutece.plugins.blobstore.util;
 
-import java.util.UUID;
-
 import fr.paris.lutece.plugins.blobstore.service.BlobStorePlugin;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.signrequest.AbstractAuthenticator;
-import fr.paris.lutece.util.signrequest.RequestAuthenticator;
+
+import java.util.UUID;
 
 
 /**
- * 
- * BlobStoreUtils
- * 
+ * BlobStoreUtils.
  */
 public final class BlobStoreUtils
 {
+    /** The Constant BEAN_REQUEST_AUTHENTICATOR. */
     public static final String BEAN_REQUEST_AUTHENTICATOR = "blobstore.requestAuthenticator";
 
     /**
-     * Private constructor
+     * Private constructor.
      */
-    private BlobStoreUtils( )
+    private BlobStoreUtils(  )
     {
     }
 
     /**
-     * Generate a new random ID blob
+     * Generate a new random ID blob.
+     *
      * @return a new random id blob
      */
-    public static String generateNewIdBlob( )
+    public static String generateNewIdBlob(  )
     {
-        UUID key = UUID.randomUUID( );
+        UUID key = UUID.randomUUID(  );
 
-        return key.toString( );
+        return key.toString(  );
     }
 
     /**
-     * Gets the {@link RequestAuthenticator}
+     * Gets the {@link AbstractAuthenticator}.
+     *
      * @return the RequestAuthenticator
      */
-    public static AbstractAuthenticator getRequestAuthenticator( )
+    public static AbstractAuthenticator getRequestAuthenticator(  )
     {
         return (AbstractAuthenticator) SpringContextService.getBean( BEAN_REQUEST_AUTHENTICATOR );
     }
 
     /**
-     * Get the workflow plugin
+     * Get the workflow plugin.
+     *
      * @return the workflow plugin
      */
-    public static Plugin getPlugin( )
+    public static Plugin getPlugin(  )
     {
         return PluginService.getPlugin( BlobStorePlugin.PLUGIN_NAME );
     }
-
 }

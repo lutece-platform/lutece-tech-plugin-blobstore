@@ -33,17 +33,6 @@
  */
 package fr.paris.lutece.plugins.blobstore.web;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-
 import fr.paris.lutece.plugins.blobstore.service.BlobStoreFileItem;
 import fr.paris.lutece.plugins.blobstore.service.IBlobStoreService;
 import fr.paris.lutece.plugins.blobstore.service.NoSuchBlobException;
@@ -55,10 +44,22 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.util.filesystem.UploadUtil;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 
 /**
  * Provides blob download.
- * 
+ *
  */
 public class BlobStoreJspBean
 {
@@ -77,7 +78,7 @@ public class BlobStoreJspBean
     {
         String strErrorMessage = null;
 
-        if ( BlobStoreUtils.getRequestAuthenticator( ).isRequestAuthenticated( request ) )
+        if ( BlobStoreUtils.getRequestAuthenticator(  ).isRequestAuthenticated( request ) )
         {
             String strBlobKey = request.getParameter( BlobStoreLibConstants.PARAMETER_BLOB_KEY );
             String strBlobstore = request.getParameter( BlobStoreLibConstants.PARAMETER_BLOB_STORE );
@@ -91,45 +92,45 @@ public class BlobStoreJspBean
                     try
                     {
                         BlobStoreFileItem fileItem = new BlobStoreFileItem( strBlobKey, blobstoreService );
-                        DownloadableFile file = new DownloadableFile( );
-                        file.setContentType( fileItem.getContentType( ) );
+                        DownloadableFile file = new DownloadableFile(  );
+                        file.setContentType( fileItem.getContentType(  ) );
                         file.setFileName( UploadUtil.cleanFileName( FileUploadService.getFileNameOnly( fileItem ) ) );
-                        file.setInputStream( fileItem.getInputStream( ) );
-                        file.setSize( (int) fileItem.getSize( ) );
+                        file.setInputStream( fileItem.getInputStream(  ) );
+                        file.setSize( (int) fileItem.getSize(  ) );
 
                         strErrorMessage = writeFile( request, response, file );
                     }
                     catch ( IOException ioe )
                     {
-                        AppLogService.error( ioe.getMessage( ), ioe );
+                        AppLogService.error( ioe.getMessage(  ), ioe );
                         // error message
                         strErrorMessage = I18nService.getLocalizedString( PROPERTY_MESSAGE_ERROR_RETRIEVING_BLOB,
-                                request.getLocale( ) );
+                                request.getLocale(  ) );
                     }
                     catch ( NoSuchBlobException nsbe )
                     {
                         // error message not found
                         strErrorMessage = I18nService.getLocalizedString( PROPERTY_MESSAGE_NO_SUCH_BLOB,
-                                request.getLocale( ) );
+                                request.getLocale(  ) );
                     }
                 }
                 else
                 {
                     // error message key
                     strErrorMessage = I18nService.getLocalizedString( PROPERTY_MESSAGE_NO_SUCH_BLOB,
-                            request.getLocale( ) );
+                            request.getLocale(  ) );
                 }
             }
             else
             {
                 // error message blob store
                 strErrorMessage = I18nService.getLocalizedString( PROPERTY_MESSAGE_NO_SUCH_BLOBSTORE,
-                        request.getLocale( ) );
+                        request.getLocale(  ) );
             }
         }
         else
         {
-            strErrorMessage = I18nService.getLocalizedString( PROPERTY_MESSAGE_ACCESS_DENIED, request.getLocale( ) );
+            strErrorMessage = I18nService.getLocalizedString( PROPERTY_MESSAGE_ACCESS_DENIED, request.getLocale(  ) );
         }
 
         // nothing to return
@@ -171,7 +172,7 @@ public class BlobStoreJspBean
 
                 if ( is != null )
                 {
-                    DownloadableFile file = new DownloadableFile( );
+                    DownloadableFile file = new DownloadableFile(  );
                     file.setFileName( strBlobKey );
                     file.setInputStream( is );
 
@@ -181,19 +182,19 @@ public class BlobStoreJspBean
                 {
                     // error message
                     strErrorMessage = I18nService.getLocalizedString( PROPERTY_MESSAGE_ERROR_RETRIEVING_BLOB,
-                            request.getLocale( ) );
+                            request.getLocale(  ) );
                 }
             }
             else
             {
                 // error message key
-                strErrorMessage = I18nService.getLocalizedString( PROPERTY_MESSAGE_NO_SUCH_BLOB, request.getLocale( ) );
+                strErrorMessage = I18nService.getLocalizedString( PROPERTY_MESSAGE_NO_SUCH_BLOB, request.getLocale(  ) );
             }
         }
         else
         {
             // error message blob store
-            strErrorMessage = I18nService.getLocalizedString( PROPERTY_MESSAGE_NO_SUCH_BLOBSTORE, request.getLocale( ) );
+            strErrorMessage = I18nService.getLocalizedString( PROPERTY_MESSAGE_NO_SUCH_BLOBSTORE, request.getLocale(  ) );
         }
 
         // nothing to return
@@ -211,38 +212,38 @@ public class BlobStoreJspBean
     {
         String strErrorMessage = null;
         OutputStream os = null;
-        InputStream is = file.getInputStream( );
+        InputStream is = file.getInputStream(  );
 
         try
         {
-            response.setHeader( "Content-Disposition", "attachment ;filename=\"" + file.getFileName( ) );
+            response.setHeader( "Content-Disposition", "attachment ;filename=\"" + file.getFileName(  ) );
             response.setHeader( "Pragma", "public" );
             response.setHeader( "Expires", "0" );
             response.setHeader( "Cache-Control", "must-revalidate,post-check=0,pre-check=0" );
 
-            if ( file.getContentType( ) != null )
+            if ( file.getContentType(  ) != null )
             {
-                response.setContentType( file.getContentType( ) );
+                response.setContentType( file.getContentType(  ) );
             }
             else
             {
                 response.setContentType( "application/force-download" );
             }
 
-            if ( file.getSize( ) != 0 )
+            if ( file.getSize(  ) != 0 )
             {
-                response.setContentLength( file.getSize( ) );
+                response.setContentLength( file.getSize(  ) );
             }
 
-            os = response.getOutputStream( );
+            os = response.getOutputStream(  );
             IOUtils.copy( is, os );
         }
         catch ( IOException ioe )
         {
-            AppLogService.error( ioe.getMessage( ), ioe );
+            AppLogService.error( ioe.getMessage(  ), ioe );
             // error message
             strErrorMessage = I18nService.getLocalizedString( PROPERTY_MESSAGE_ERROR_RETRIEVING_BLOB,
-                    request.getLocale( ) );
+                    request.getLocale(  ) );
         }
         finally
         {
@@ -254,9 +255,9 @@ public class BlobStoreJspBean
     }
 
     /**
-     * 
+     *
      * DownloadableFile
-     * 
+     *
      */
     private static class DownloadableFile
     {
@@ -269,7 +270,7 @@ public class BlobStoreJspBean
          * Gets the input stream
          * @return the input stream
          */
-        public InputStream getInputStream( )
+        public InputStream getInputStream(  )
         {
             return _inputStream;
         }
@@ -287,7 +288,7 @@ public class BlobStoreJspBean
          * Gets the file name
          * @return the file name
          */
-        public String getFileName( )
+        public String getFileName(  )
         {
             return _strFileName;
         }
@@ -305,7 +306,7 @@ public class BlobStoreJspBean
          * Gets the file size
          * @return the file size
          */
-        public int getSize( )
+        public int getSize(  )
         {
             return _nSize;
         }
@@ -323,7 +324,7 @@ public class BlobStoreJspBean
          * Gets the content type
          * @return the content type
          */
-        public String getContentType( )
+        public String getContentType(  )
         {
             return _strContentType;
         }

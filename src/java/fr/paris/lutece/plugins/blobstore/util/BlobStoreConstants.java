@@ -33,10 +33,11 @@
  */
 package fr.paris.lutece.plugins.blobstore.util;
 
+
 /**
- * 
+ *
  * BlobstoreConstants
- * 
+ *
  */
 public final class BlobStoreConstants
 {
@@ -48,7 +49,7 @@ public final class BlobStoreConstants
     /**
      * Empty constructor
      */
-    private BlobStoreConstants( )
+    private BlobStoreConstants(  )
     {
         // nothing
     }

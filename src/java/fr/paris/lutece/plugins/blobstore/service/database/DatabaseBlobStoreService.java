@@ -33,10 +33,6 @@
  */
 package fr.paris.lutece.plugins.blobstore.service.database;
 
-import java.io.InputStream;
-
-import org.apache.commons.lang.StringUtils;
-
 import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.database.DatabaseBlobStoreHome;
@@ -48,11 +44,15 @@ import fr.paris.lutece.plugins.blobstore.util.BlobStoreLibUtils;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 
+import org.apache.commons.lang.StringUtils;
+
+import java.io.InputStream;
+
 
 /**
- * 
+ *
  * DatabaseBlobStoreService.
- * 
+ *
  */
 public class DatabaseBlobStoreService implements IBlobStoreService
 {
@@ -65,21 +65,21 @@ public class DatabaseBlobStoreService implements IBlobStoreService
     private String _strName = "databaseBlobstore";
 
     /** Uses {@link JSPBlobStoreDownloadUrlService} as default one */
-    private IBlobStoreDownloadUrlService _downloadUrlService = new JSPBlobStoreDownloadUrlService( );
+    private IBlobStoreDownloadUrlService _downloadUrlService = new JSPBlobStoreDownloadUrlService(  );
 
-    /**
-     * Gets the downloadService
-     * @return the downloadService
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.paris.lutece.plugins.blobstore.service.IBlobStoreService#
+     * getDownloadUrlService()
      */
-    public IBlobStoreDownloadUrlService getDownloadUrlService( )
+    @Override
+    public IBlobStoreDownloadUrlService getDownloadUrlService(  )
     {
         return _downloadUrlService;
     }
 
-    /**
-     * Sets the downloadService
-     * @param downloadUrlService downloadService
-     */
+    @Override
     public void setDownloadUrlService( IBlobStoreDownloadUrlService downloadUrlService )
     {
         _downloadUrlService = downloadUrlService;
@@ -89,7 +89,7 @@ public class DatabaseBlobStoreService implements IBlobStoreService
      * {@inheritDoc}
      */
     @Override
-    public String getName( )
+    public String getName(  )
     {
         return _strName;
     }
@@ -123,13 +123,12 @@ public class DatabaseBlobStoreService implements IBlobStoreService
 
         if ( StringUtils.isNotBlank( strKey ) )
         {
-            IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService
-                    .getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
+            IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService.getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
             BytesBlobStore blobStore = databaseBlobStoreHome.findByPrimaryKey( strKey );
 
             if ( blobStore != null )
             {
-                blob = blobStore.getValue( );
+                blob = blobStore.getValue(  );
             }
         }
 
@@ -142,15 +141,15 @@ public class DatabaseBlobStoreService implements IBlobStoreService
     @Override
     public String store( byte[] blob )
     {
-        String strKey = BlobStoreLibUtils.generateNewIdBlob( );
+        String strKey = BlobStoreLibUtils.generateNewIdBlob(  );
 
         if ( StringUtils.isNotBlank( strKey ) )
         {
-            BytesBlobStore blobStore = new BytesBlobStore( );
+            BytesBlobStore blobStore = new BytesBlobStore(  );
             blobStore.setId( strKey );
             blobStore.setValue( blob );
-            IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService
-                    .getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
+
+            IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService.getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
             databaseBlobStoreHome.create( blobStore );
         }
         else
@@ -169,8 +168,7 @@ public class DatabaseBlobStoreService implements IBlobStoreService
     {
         if ( StringUtils.isNotBlank( strKey ) )
         {
-            IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService
-                    .getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
+            IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService.getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
             BytesBlobStore blobStore = databaseBlobStoreHome.findByPrimaryKey( strKey );
 
             if ( blobStore != null )
@@ -187,15 +185,15 @@ public class DatabaseBlobStoreService implements IBlobStoreService
     @Override
     public String storeInputStream( InputStream inputStream )
     {
-        String strKey = BlobStoreLibUtils.generateNewIdBlob( );
+        String strKey = BlobStoreLibUtils.generateNewIdBlob(  );
 
         if ( StringUtils.isNotBlank( strKey ) )
         {
-            InputStreamBlobStore blobStore = new InputStreamBlobStore( );
+            InputStreamBlobStore blobStore = new InputStreamBlobStore(  );
             blobStore.setInputStream( inputStream );
             blobStore.setId( strKey );
-            IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService
-                    .getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
+
+            IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService.getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
             databaseBlobStoreHome.createInputStream( blobStore );
         }
         else
@@ -212,9 +210,10 @@ public class DatabaseBlobStoreService implements IBlobStoreService
     @Override
     public void updateInputStream( String strKey, InputStream inputStream )
     {
-        InputStreamBlobStore blobStore = new InputStreamBlobStore( );
+        InputStreamBlobStore blobStore = new InputStreamBlobStore(  );
         blobStore.setInputStream( inputStream );
         blobStore.setId( strKey );
+
         IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService.getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
         databaseBlobStoreHome.updateInputStream( blobStore );
     }
@@ -226,6 +225,7 @@ public class DatabaseBlobStoreService implements IBlobStoreService
     public InputStream getBlobInputStream( String strKey )
     {
         IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService.getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
+
         return databaseBlobStoreHome.findByPrimaryKeyInputStream( strKey );
     }
 
@@ -235,7 +235,7 @@ public class DatabaseBlobStoreService implements IBlobStoreService
     @Override
     public String getBlobUrl( String strKey )
     {
-        return _downloadUrlService.getDownloadUrl( getName( ), strKey );
+        return _downloadUrlService.getDownloadUrl( getName(  ), strKey );
     }
 
     /**
@@ -244,6 +244,6 @@ public class DatabaseBlobStoreService implements IBlobStoreService
     @Override
     public String getFileUrl( String strKey )
     {
-        return _downloadUrlService.getFileUrl( getName( ), strKey );
+        return _downloadUrlService.getFileUrl( getName(  ), strKey );
     }
 }

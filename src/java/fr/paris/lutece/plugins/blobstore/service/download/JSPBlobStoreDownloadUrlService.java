@@ -33,20 +33,20 @@
  */
 package fr.paris.lutece.plugins.blobstore.service.download;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import fr.paris.lutece.plugins.blobstore.util.BlobStoreConstants;
 import fr.paris.lutece.plugins.blobstore.util.BlobStoreLibConstants;
 import fr.paris.lutece.plugins.blobstore.util.BlobStoreUtils;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.url.UrlItem;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 
 /**
  * Uses JSP to serve file.
- * 
+ *
  */
 public class JSPBlobStoreDownloadUrlService implements IBlobStoreDownloadUrlService
 {
@@ -100,17 +100,17 @@ public class JSPBlobStoreDownloadUrlService implements IBlobStoreDownloadUrlServ
             urlItem.addParameter( BlobStoreLibConstants.PARAMETER_BLOB_STORE, strBlobStore );
             urlItem.addParameter( BlobStoreLibConstants.PARAMETER_BLOB_KEY, strBlobKey );
 
-            List<String> listElements = new ArrayList<String>( );
+            List<String> listElements = new ArrayList<String>(  );
             listElements.add( strBlobStore );
             listElements.add( strBlobKey );
 
-            String strTimestamp = Long.toString( new Date( ).getTime( ) );
-            String strSignature = BlobStoreUtils.getRequestAuthenticator( ).buildSignature( listElements, strTimestamp );
+            String strTimestamp = Long.toString( new Date(  ).getTime(  ) );
+            String strSignature = BlobStoreUtils.getRequestAuthenticator(  ).buildSignature( listElements, strTimestamp );
 
             urlItem.addParameter( BlobStoreConstants.PARAMETER_TIMESTAMP, strTimestamp );
             urlItem.addParameter( BlobStoreConstants.PARAMETER_SIGNATURE, strSignature );
 
-            strBlobUrl = urlItem.getUrl( );
+            strBlobUrl = urlItem.getUrl(  );
         }
         else
         {

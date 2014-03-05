@@ -79,6 +79,7 @@ public class MyPluginService
 &lt;bean id="<strong>myplugin</strong>.blobStoreService" class="fr.paris.lutece.plugins.blobstore.service.filesystem.FileSystemBlobStoreService"&gt;
 	&lt;property name="name" value="&lt;strong&gt;myplugin&lt;/strong&gt;.blobStoreService" /&gt;
 	&lt;property name="basePath" value="<strong>D:\data\blobstore</strong>" /&gt;
+	&lt;property name="depth" value="<strong>1" /&gt;
 &lt;/bean&gt;
 &lt;bean id="<strong>myplugin.myPluginService</strong>" class="<strong>fr.paris.lutece.plugins.myplugin.service.MyPluginService</strong>"&gt;
 	&lt;property name="blobStoreService" ref="<strong>myplugin</strong>.blobStoreService" /&gt;
