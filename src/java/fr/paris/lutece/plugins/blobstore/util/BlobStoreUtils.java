@@ -37,7 +37,7 @@ import fr.paris.lutece.plugins.blobstore.service.BlobStorePlugin;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
-import fr.paris.lutece.util.signrequest.AbstractAuthenticator;
+import fr.paris.lutece.util.signrequest.AbstractPrivateKeyAuthenticator;
 
 import java.util.UUID;
 
@@ -70,13 +70,13 @@ public final class BlobStoreUtils
     }
 
     /**
-     * Gets the {@link AbstractAuthenticator}.
+     * Gets the {@link AbstractPrivateKeyAuthenticator}.
      *
      * @return the RequestAuthenticator
      */
-    public static AbstractAuthenticator getRequestAuthenticator(  )
+    public static AbstractPrivateKeyAuthenticator getRequestAuthenticator(  )
     {
-        return (AbstractAuthenticator) SpringContextService.getBean( BEAN_REQUEST_AUTHENTICATOR );
+        return (AbstractPrivateKeyAuthenticator) SpringContextService.getBean( BEAN_REQUEST_AUTHENTICATOR );
     }
 
     /**
