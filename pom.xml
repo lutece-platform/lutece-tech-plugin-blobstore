@@ -9,7 +9,7 @@
     <groupId>fr.paris.lutece.plugins</groupId>
     <artifactId>plugin-blobstore</artifactId>
     <packaging>lutece-plugin</packaging>
-    <version>2.0.4-SNAPSHOT</version>
+    <version>2.0.4</version>
     <name>Lutece blobstore plugin</name>
     <repositories>
         <repository>
@@ -59,6 +59,6 @@
         <connection>scm:git:https://github.com/lutece-platform/lutece-tech-plugin-blobstore.git</connection>
         <developerConnection>scm:git:https://github.com/lutece-platform/lutece-tech-plugin-blobstore.git</developerConnection>
         <url>https://github.com/lutece-platform/lutece-tech-plugin-blobstore.git</url>
-      <tag>HEAD</tag>
+      <tag>lutece-tech-plugin-blobstore-2.0.4</tag>
   </scm>
 </project>
