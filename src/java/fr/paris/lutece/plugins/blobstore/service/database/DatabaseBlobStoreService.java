@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,6 @@ import fr.paris.lutece.plugins.blobstore.util.BlobStoreLibUtils;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 
-
 /**
  * 
  * DatabaseBlobStoreService.
@@ -69,6 +68,7 @@ public class DatabaseBlobStoreService implements IBlobStoreService
 
     /**
      * Gets the downloadService
+     * 
      * @return the downloadService
      */
     public IBlobStoreDownloadUrlService getDownloadUrlService( )
@@ -78,7 +78,9 @@ public class DatabaseBlobStoreService implements IBlobStoreService
 
     /**
      * Sets the downloadService
-     * @param downloadUrlService downloadService
+     * 
+     * @param downloadUrlService
+     *            downloadService
      */
     public void setDownloadUrlService( IBlobStoreDownloadUrlService downloadUrlService )
     {
@@ -109,8 +111,7 @@ public class DatabaseBlobStoreService implements IBlobStoreService
     @Override
     public void delete( String strKey )
     {
-        IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService
-                .getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
+        IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService.getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
         databaseBlobStoreHome.remove( strKey );
     }
 
@@ -118,14 +119,13 @@ public class DatabaseBlobStoreService implements IBlobStoreService
      * {@inheritDoc}
      */
     @Override
-    public byte[] getBlob( String strKey )
+    public byte [ ] getBlob( String strKey )
     {
-        byte[] blob = null;
+        byte [ ] blob = null;
 
         if ( StringUtils.isNotBlank( strKey ) )
         {
-            IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService
-                    .getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
+            IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService.getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
             BytesBlobStore blobStore = databaseBlobStoreHome.findByPrimaryKey( strKey );
 
             if ( blobStore != null )
@@ -141,7 +141,7 @@ public class DatabaseBlobStoreService implements IBlobStoreService
      * {@inheritDoc}
      */
     @Override
-    public String store( byte[] blob )
+    public String store( byte [ ] blob )
     {
         String strKey = BlobStoreLibUtils.generateNewIdBlob( );
 
@@ -151,8 +151,7 @@ public class DatabaseBlobStoreService implements IBlobStoreService
             blobStore.setId( strKey );
             blobStore.setValue( blob );
 
-            IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService
-                    .getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
+            IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService.getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
             databaseBlobStoreHome.create( blobStore );
         }
         else
@@ -167,12 +166,11 @@ public class DatabaseBlobStoreService implements IBlobStoreService
      * {@inheritDoc}
      */
     @Override
-    public void update( String strKey, byte[] blob )
+    public void update( String strKey, byte [ ] blob )
     {
         if ( StringUtils.isNotBlank( strKey ) )
         {
-            IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService
-                    .getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
+            IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService.getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
             BytesBlobStore blobStore = databaseBlobStoreHome.findByPrimaryKey( strKey );
 
             if ( blobStore != null )
@@ -197,8 +195,7 @@ public class DatabaseBlobStoreService implements IBlobStoreService
             blobStore.setInputStream( inputStream );
             blobStore.setId( strKey );
 
-            IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService
-                    .getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
+            IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService.getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
             databaseBlobStoreHome.createInputStream( blobStore );
         }
         else
@@ -219,8 +216,7 @@ public class DatabaseBlobStoreService implements IBlobStoreService
         blobStore.setInputStream( inputStream );
         blobStore.setId( strKey );
 
-        IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService
-                .getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
+        IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService.getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
         databaseBlobStoreHome.updateInputStream( blobStore );
     }
 
@@ -230,8 +226,7 @@ public class DatabaseBlobStoreService implements IBlobStoreService
     @Override
     public InputStream getBlobInputStream( String strKey )
     {
-        IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService
-                .getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
+        IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService.getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
 
         return databaseBlobStoreHome.findByPrimaryKeyInputStream( strKey );
     }

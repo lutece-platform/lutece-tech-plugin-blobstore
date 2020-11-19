@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 /**
  * Uses JSP to serve file.
  *
@@ -54,8 +53,11 @@ public class JSPBlobStoreDownloadUrlService implements IBlobStoreDownloadUrlServ
 
     /**
      * Gets the file url
-     * @param strBlobStore the blob store
-     * @param strBlobKey the blob key
+     * 
+     * @param strBlobStore
+     *            the blob store
+     * @param strBlobKey
+     *            the blob key
      * @return the url
      */
     @Override
@@ -66,8 +68,11 @@ public class JSPBlobStoreDownloadUrlService implements IBlobStoreDownloadUrlServ
 
     /**
      * Gets the downloadUrl
-     * @param strBlobStore the blobstore
-     * @param strBlobKey the key
+     * 
+     * @param strBlobStore
+     *            the blobstore
+     * @param strBlobKey
+     *            the key
      * @return the url
      */
     @Override
@@ -78,9 +83,13 @@ public class JSPBlobStoreDownloadUrlService implements IBlobStoreDownloadUrlServ
 
     /**
      * Builds the blob url
-     * @param strBlobStore the blob store
-     * @param strBlobKey the blob key
-     * @param strJsp the jsp
+     * 
+     * @param strBlobStore
+     *            the blob store
+     * @param strBlobKey
+     *            the blob key
+     * @param strJsp
+     *            the jsp
      * @return the blob url
      */
     private static String getBlobUrl( String strBlobStore, String strBlobKey, String strJsp )
@@ -100,17 +109,17 @@ public class JSPBlobStoreDownloadUrlService implements IBlobStoreDownloadUrlServ
             urlItem.addParameter( BlobStoreLibConstants.PARAMETER_BLOB_STORE, strBlobStore );
             urlItem.addParameter( BlobStoreLibConstants.PARAMETER_BLOB_KEY, strBlobKey );
 
-            List<String> listElements = new ArrayList<String>(  );
+            List<String> listElements = new ArrayList<String>( );
             listElements.add( strBlobStore );
             listElements.add( strBlobKey );
 
-            String strTimestamp = Long.toString( new Date(  ).getTime(  ) );
-            String strSignature = BlobStoreUtils.getRequestAuthenticator(  ).buildSignature( listElements, strTimestamp );
+            String strTimestamp = Long.toString( new Date( ).getTime( ) );
+            String strSignature = BlobStoreUtils.getRequestAuthenticator( ).buildSignature( listElements, strTimestamp );
 
             urlItem.addParameter( BlobStoreConstants.PARAMETER_TIMESTAMP, strTimestamp );
             urlItem.addParameter( BlobStoreConstants.PARAMETER_SIGNATURE, strSignature );
 
-            strBlobUrl = urlItem.getUrl(  );
+            strBlobUrl = urlItem.getUrl( );
         }
         else
         {

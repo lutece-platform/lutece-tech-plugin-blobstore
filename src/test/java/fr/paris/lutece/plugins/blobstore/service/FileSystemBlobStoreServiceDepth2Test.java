@@ -46,7 +46,6 @@ import java.io.InputStream;
 
 import java.util.Arrays;
 
-
 /**
  * FileSystemBlobStoreServiceTest.
  */
@@ -63,21 +62,23 @@ public class FileSystemBlobStoreServiceDepth2Test extends LuteceTestCase
      *
      * @return the base directory
      */
-    private String getBaseDirectory(  )
+    private String getBaseDirectory( )
     {
-        return getResourcesDir(  ) + "../test-classes/blobstore/";
+        return getResourcesDir( ) + "../test-classes/blobstore/";
     }
 
     /**
      * Gets the service.
      *
-     * @param baseDirectory the base directory
-     * @param depth the depth
+     * @param baseDirectory
+     *            the base directory
+     * @param depth
+     *            the depth
      * @return the service
      */
     private FileSystemBlobStoreService getService( final String baseDirectory, final Integer depth )
     {
-        FileSystemBlobStoreService service = new FileSystemBlobStoreService(  );
+        FileSystemBlobStoreService service = new FileSystemBlobStoreService( );
         service.setBasePath( baseDirectory );
         service.setDepth( depth );
 
@@ -90,22 +91,22 @@ public class FileSystemBlobStoreServiceDepth2Test extends LuteceTestCase
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
-    public void testCreate(  ) throws IOException
+    public void testCreate( ) throws IOException
     {
-        clearBlobStore(  );
+        clearBlobStore( );
 
-        final FileSystemBlobStoreService service = getService( getBaseDirectory(  ), DEPTH );
+        final FileSystemBlobStoreService service = getService( getBaseDirectory( ), DEPTH );
 
-        final String strFilename = getResourcesDir(  ) + "../test-classes/" + FILE_NAME;
+        final String strFilename = getResourcesDir( ) + "../test-classes/" + FILE_NAME;
         final InputStream is = new FileInputStream( strFilename );
-        final byte[] bStore = IOUtils.toByteArray( is );
+        final byte [ ] bStore = IOUtils.toByteArray( is );
         IOUtils.closeQuietly( is );
 
         final String strKey = service.store( bStore );
-        assertTrue( new File( getFilePath( strKey ) ).exists(  ) );
+        assertTrue( new File( getFilePath( strKey ) ).exists( ) );
 
         final InputStream is2 = new FileInputStream( getFilePath( strKey ) );
-        final byte[] bRead = IOUtils.toByteArray( is2 );
+        final byte [ ] bRead = IOUtils.toByteArray( is2 );
         IOUtils.closeQuietly( is2 );
 
         assertTrue( Arrays.equals( bRead, bStore ) );
@@ -114,13 +115,13 @@ public class FileSystemBlobStoreServiceDepth2Test extends LuteceTestCase
     /**
      * Gets the file path.
      *
-     * @param strKey the str key
+     * @param strKey
+     *            the str key
      * @return the file path
      */
     private String getFilePath( final String strKey )
     {
-        return getBaseDirectory(  ) + strKey.substring( 0, 3 ) + File.separatorChar + strKey.substring( 3, 6 ) +
-        File.separatorChar + strKey;
+        return getBaseDirectory( ) + strKey.substring( 0, 3 ) + File.separatorChar + strKey.substring( 3, 6 ) + File.separatorChar + strKey;
     }
 
     /**
@@ -129,17 +130,17 @@ public class FileSystemBlobStoreServiceDepth2Test extends LuteceTestCase
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
-    public void testUpdate(  ) throws IOException
+    public void testUpdate( ) throws IOException
     {
-        clearBlobStore(  );
+        clearBlobStore( );
 
-        final FileSystemBlobStoreService service = getService( getBaseDirectory(  ), DEPTH );
+        final FileSystemBlobStoreService service = getService( getBaseDirectory( ), DEPTH );
 
-        final String strFilename = getResourcesDir(  ) + "../test-classes/" + FILE_NAME;
+        final String strFilename = getResourcesDir( ) + "../test-classes/" + FILE_NAME;
 
         final InputStream is = new FileInputStream( strFilename );
 
-        final byte[] bStore;
+        final byte [ ] bStore;
 
         try
         {
@@ -152,10 +153,10 @@ public class FileSystemBlobStoreServiceDepth2Test extends LuteceTestCase
 
         final String strKey = service.store( bStore );
 
-        final byte[] bUpdate = "Updated bytes".getBytes(  );
+        final byte [ ] bUpdate = "Updated bytes".getBytes( );
         service.update( strKey, bUpdate );
 
-        final byte[] bRead;
+        final byte [ ] bRead;
         InputStream is2 = new FileInputStream( getFilePath( strKey ) );
 
         try
@@ -176,15 +177,15 @@ public class FileSystemBlobStoreServiceDepth2Test extends LuteceTestCase
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
-    public void testDelete(  ) throws IOException
+    public void testDelete( ) throws IOException
     {
-        clearBlobStore(  );
+        clearBlobStore( );
 
-        final FileSystemBlobStoreService service = getService( getBaseDirectory(  ), DEPTH );
+        final FileSystemBlobStoreService service = getService( getBaseDirectory( ), DEPTH );
 
-        final String strFilename = getResourcesDir(  ) + "../test-classes/" + FILE_NAME;
+        final String strFilename = getResourcesDir( ) + "../test-classes/" + FILE_NAME;
         final InputStream is = new FileInputStream( strFilename );
-        final byte[] bStore;
+        final byte [ ] bStore;
 
         try
         {
@@ -197,7 +198,7 @@ public class FileSystemBlobStoreServiceDepth2Test extends LuteceTestCase
 
         final String strKey = service.store( bStore );
         service.delete( strKey );
-        assertFalse( new File( getFilePath( strKey ) ).exists(  ) );
+        assertFalse( new File( getFilePath( strKey ) ).exists( ) );
     }
 
     /**
@@ -206,26 +207,26 @@ public class FileSystemBlobStoreServiceDepth2Test extends LuteceTestCase
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
-    private void clearBlobStore(  ) throws IOException
+    private void clearBlobStore( ) throws IOException
     {
-        final String baseDirectory = getBaseDirectory(  );
+        final String baseDirectory = getBaseDirectory( );
         final File baseFile = new File( baseDirectory );
 
-        if ( baseFile.exists(  ) )
+        if ( baseFile.exists( ) )
         {
-            if ( baseFile.isDirectory(  ) )
+            if ( baseFile.isDirectory( ) )
             {
                 FileUtils.cleanDirectory( baseFile );
             }
             else
             {
-                baseFile.delete(  );
-                baseFile.mkdir(  );
+                baseFile.delete( );
+                baseFile.mkdir( );
             }
         }
         else
         {
-            baseFile.mkdir(  );
+            baseFile.mkdir( );
         }
     }
 }

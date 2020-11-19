@@ -45,7 +45,6 @@ import java.io.InputStream;
 
 import java.util.Arrays;
 
-
 /**
  * DatabaseBlobStoreServiceTest.
  */
@@ -57,18 +56,19 @@ public class DatabaseBlobStoreServiceTest extends LuteceTestCase
     /**
      * Tests input stream.
      *
-     * @throws IOException Signals that an I/O exception has occurred.
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
      */
-    public void testLoadInputStream(  ) throws IOException
+    public void testLoadInputStream( ) throws IOException
     {
-        String strFilename = getResourcesDir(  ) + "../test-classes/" + FILE_NAME;
-        byte[] bStore = IOUtils.toByteArray( new FileInputStream( strFilename ) );
+        String strFilename = getResourcesDir( ) + "../test-classes/" + FILE_NAME;
+        byte [ ] bStore = IOUtils.toByteArray( new FileInputStream( strFilename ) );
 
-        DatabaseBlobStoreService service = new DatabaseBlobStoreService(  );
+        DatabaseBlobStoreService service = new DatabaseBlobStoreService( );
         String strKey = service.store( bStore );
 
         InputStream is = service.getBlobInputStream( strKey );
-        byte[] bRead = IOUtils.toByteArray( is );
+        byte [ ] bRead = IOUtils.toByteArray( is );
 
         assertTrue( Arrays.equals( bRead, bStore ) );
     }
@@ -76,26 +76,28 @@ public class DatabaseBlobStoreServiceTest extends LuteceTestCase
     /**
      * Test blob store file item.
      *
-     * @throws IOException Signals that an I/O exception has occurred.
-     * @throws NoSuchBlobException the no such blob exception
+     * @throws IOException
+     *             Signals that an I/O exception has occurred.
+     * @throws NoSuchBlobException
+     *             the no such blob exception
      */
-    public void testBlobStoreFileItem(  ) throws IOException, NoSuchBlobException
+    public void testBlobStoreFileItem( ) throws IOException, NoSuchBlobException
     {
-        String strFilename = getResourcesDir(  ) + "../test-classes/testblob.txt";
-        byte[] bStore = IOUtils.toByteArray( new FileInputStream( strFilename ) );
+        String strFilename = getResourcesDir( ) + "../test-classes/testblob.txt";
+        byte [ ] bStore = IOUtils.toByteArray( new FileInputStream( strFilename ) );
 
-        DatabaseBlobStoreService service = new DatabaseBlobStoreService(  );
+        DatabaseBlobStoreService service = new DatabaseBlobStoreService( );
         String strFileKey = service.store( bStore );
         File file = new File( strFilename );
 
-        String strMetadata = BlobStoreFileItem.buildFileMetadata( FILE_NAME, file.length(  ), strFileKey, "text/plain" );
+        String strMetadata = BlobStoreFileItem.buildFileMetadata( FILE_NAME, file.length( ), strFileKey, "text/plain" );
 
-        String strMetadataKey = service.store( strMetadata.getBytes(  ) );
+        String strMetadataKey = service.store( strMetadata.getBytes( ) );
 
         BlobStoreFileItem fileItem = new BlobStoreFileItem( strMetadataKey, service );
 
-        assertEquals( strFileKey, fileItem.getFileBlobId(  ) );
+        assertEquals( strFileKey, fileItem.getFileBlobId( ) );
 
-        assertTrue( Arrays.equals( bStore, fileItem.get(  ) ) );
+        assertTrue( Arrays.equals( bStore, fileItem.get( ) ) );
     }
 }

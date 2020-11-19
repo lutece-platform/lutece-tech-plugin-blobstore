@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,6 @@ import fr.paris.lutece.util.signrequest.AbstractPrivateKeyAuthenticator;
 
 import java.util.UUID;
 
-
 /**
  * BlobStoreUtils.
  */
@@ -53,7 +52,7 @@ public final class BlobStoreUtils
     /**
      * Private constructor.
      */
-    private BlobStoreUtils(  )
+    private BlobStoreUtils( )
     {
     }
 
@@ -62,11 +61,11 @@ public final class BlobStoreUtils
      *
      * @return a new random id blob
      */
-    public static String generateNewIdBlob(  )
+    public static String generateNewIdBlob( )
     {
-        UUID key = UUID.randomUUID(  );
+        UUID key = UUID.randomUUID( );
 
-        return key.toString(  );
+        return key.toString( );
     }
 
     /**
@@ -74,7 +73,7 @@ public final class BlobStoreUtils
      *
      * @return the RequestAuthenticator
      */
-    public static AbstractPrivateKeyAuthenticator getRequestAuthenticator(  )
+    public static AbstractPrivateKeyAuthenticator getRequestAuthenticator( )
     {
         return (AbstractPrivateKeyAuthenticator) SpringContextService.getBean( BEAN_REQUEST_AUTHENTICATOR );
     }
@@ -84,7 +83,7 @@ public final class BlobStoreUtils
      *
      * @return the workflow plugin
      */
-    public static Plugin getPlugin(  )
+    public static Plugin getPlugin( )
     {
         return PluginService.getPlugin( BlobStorePlugin.PLUGIN_NAME );
     }

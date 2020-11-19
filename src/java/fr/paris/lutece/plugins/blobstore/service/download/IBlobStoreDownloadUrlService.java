@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,26 +35,32 @@ package fr.paris.lutece.plugins.blobstore.service.download;
 
 import java.io.Serializable;
 
-
 /**
  *
  * Builds download Url. Useful when we want to share a http link, ftp link, or fylesystem link.
+ * 
  * @see JSPBlobStoreDownloadUrlService
  */
 public interface IBlobStoreDownloadUrlService extends Serializable
 {
     /**
      * A file URL
-     * @param strBlobStore the blobstore namle
-     * @param strBlobKey the blobstore key
+     * 
+     * @param strBlobStore
+     *            the blobstore namle
+     * @param strBlobKey
+     *            the blobstore key
      * @return the file url
      */
     String getFileUrl( String strBlobStore, String strBlobKey );
 
     /**
      * A blob url
-     * @param strBlobStore the blobstore namle
-     * @param strBlobKey the blobstore key
+     * 
+     * @param strBlobStore
+     *            the blobstore namle
+     * @param strBlobKey
+     *            the blobstore key
      * @return the blob url
      */
     String getDownloadUrl( String strBlobStore, String strBlobKey );

@@ -3,11 +3,11 @@
 [![Line of code](https://dev.lutece.paris.fr/sonar/api/project_badges/measure?project=fr.paris.lutece.plugins%3Aplugin-blobstore&metric=ncloc)](https://dev.lutece.paris.fr/sonar/dashboard?id=fr.paris.lutece.plugins%3Aplugin-blobstore)
 [![Coverage](https://dev.lutece.paris.fr/sonar/api/project_badges/measure?project=fr.paris.lutece.plugins%3Aplugin-blobstore&metric=coverage)](https://dev.lutece.paris.fr/sonar/dashboard?id=fr.paris.lutece.plugins%3Aplugin-blobstore)
 
-# Plugin's description
+# Descriptif du plugin
 
 ## Introduction
 
-This plugin handles the big data storage, in database or file system.
+Ce plugin permet de stocker des données de taille importante, que ce soit en base de données ou en fichier système.
 
 
 [Maven documentation and reports](https://dev.lutece.paris.fr/plugins/plugin-blobstore/)

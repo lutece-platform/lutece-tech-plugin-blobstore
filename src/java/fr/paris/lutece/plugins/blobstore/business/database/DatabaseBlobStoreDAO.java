@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,6 @@ import org.apache.commons.lang.StringUtils;
 
 import java.io.InputStream;
 
-
 /**
  *
  * BlobStoreDAO
@@ -63,19 +62,19 @@ public final class DatabaseBlobStoreDAO implements IDatabaseBlobStoreDAO
      * {@inheritDoc}
      */
     @Override
-    public String loadLastPrimaryKey(  )
+    public String loadLastPrimaryKey( )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_LAST_PRIMARY_KEY, BlobStoreUtils.getPlugin(  ) );
-        daoUtil.executeQuery(  );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_LAST_PRIMARY_KEY, BlobStoreUtils.getPlugin( ) );
+        daoUtil.executeQuery( );
 
         String strKey = StringUtils.EMPTY;
 
-        if ( daoUtil.next(  ) )
+        if ( daoUtil.next( ) )
         {
             strKey = daoUtil.getString( 1 );
         }
 
-        daoUtil.free(  );
+        daoUtil.free( );
 
         return strKey;
     }
@@ -87,12 +86,12 @@ public final class DatabaseBlobStoreDAO implements IDatabaseBlobStoreDAO
     public synchronized void insert( BytesBlobStore blobStore )
     {
         int nIndex = 1;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, BlobStoreUtils.getPlugin(  ) );
-        daoUtil.setString( nIndex++, blobStore.getId(  ) );
-        daoUtil.setBytes( nIndex++, blobStore.getValue(  ) );
-        daoUtil.executeUpdate(  );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, BlobStoreUtils.getPlugin( ) );
+        daoUtil.setString( nIndex++, blobStore.getId( ) );
+        daoUtil.setBytes( nIndex++, blobStore.getValue( ) );
+        daoUtil.executeUpdate( );
 
-        daoUtil.free(  );
+        daoUtil.free( );
     }
 
     /**
@@ -101,21 +100,21 @@ public final class DatabaseBlobStoreDAO implements IDatabaseBlobStoreDAO
     @Override
     public BytesBlobStore load( String strId )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_BY_PRIMARY_KEY, BlobStoreUtils.getPlugin(  ) );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_BY_PRIMARY_KEY, BlobStoreUtils.getPlugin( ) );
         daoUtil.setString( 1, strId );
-        daoUtil.executeQuery(  );
+        daoUtil.executeQuery( );
 
         BytesBlobStore blobStore = null;
 
-        if ( daoUtil.next(  ) )
+        if ( daoUtil.next( ) )
         {
             int nIndex = 1;
-            blobStore = new BytesBlobStore(  );
+            blobStore = new BytesBlobStore( );
             blobStore.setId( daoUtil.getString( nIndex++ ) );
             blobStore.setValue( daoUtil.getBytes( nIndex++ ) );
         }
 
-        daoUtil.free(  );
+        daoUtil.free( );
 
         return blobStore;
     }
@@ -126,10 +125,10 @@ public final class DatabaseBlobStoreDAO implements IDatabaseBlobStoreDAO
     @Override
     public void delete( String strId )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, BlobStoreUtils.getPlugin(  ) );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, BlobStoreUtils.getPlugin( ) );
         daoUtil.setString( 1, strId );
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
     }
 
     /**
@@ -139,11 +138,11 @@ public final class DatabaseBlobStoreDAO implements IDatabaseBlobStoreDAO
     public void store( BytesBlobStore blobStore )
     {
         int nIndex = 1;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, BlobStoreUtils.getPlugin(  ) );
-        daoUtil.setBytes( nIndex++, blobStore.getValue(  ) );
-        daoUtil.setString( nIndex++, blobStore.getId(  ) );
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, BlobStoreUtils.getPlugin( ) );
+        daoUtil.setBytes( nIndex++, blobStore.getValue( ) );
+        daoUtil.setString( nIndex++, blobStore.getId( ) );
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
     }
 
     /**
@@ -153,22 +152,22 @@ public final class DatabaseBlobStoreDAO implements IDatabaseBlobStoreDAO
     public void insert( InputStreamBlobStore blobStore )
     {
         int nIndex = 1;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, BlobStoreUtils.getPlugin(  ) );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, BlobStoreUtils.getPlugin( ) );
 
         try
         {
-            daoUtil.setString( nIndex++, blobStore.getId(  ) );
-            daoUtil.setBinaryStream( nIndex++, blobStore.getInputStream(  ), -1 );
-            daoUtil.executeUpdate(  );
+            daoUtil.setString( nIndex++, blobStore.getId( ) );
+            daoUtil.setBinaryStream( nIndex++, blobStore.getInputStream( ), -1 );
+            daoUtil.executeUpdate( );
         }
-        catch ( Exception e )
+        catch( Exception e )
         {
-            AppLogService.error( e.getMessage(  ), e );
-            throw new AppException( e.getMessage(  ), e );
+            AppLogService.error( e.getMessage( ), e );
+            throw new AppException( e.getMessage( ), e );
         }
         finally
         {
-            daoUtil.free(  );
+            daoUtil.free( );
         }
     }
 
@@ -179,11 +178,11 @@ public final class DatabaseBlobStoreDAO implements IDatabaseBlobStoreDAO
     public void store( InputStreamBlobStore blobStore )
     {
         int nIndex = 1;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, BlobStoreUtils.getPlugin(  ) );
-        daoUtil.setBinaryStream( nIndex++, blobStore.getInputStream(  ), -1 );
-        daoUtil.setString( nIndex++, blobStore.getId(  ) );
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, BlobStoreUtils.getPlugin( ) );
+        daoUtil.setBinaryStream( nIndex++, blobStore.getInputStream( ), -1 );
+        daoUtil.setString( nIndex++, blobStore.getId( ) );
+        daoUtil.executeUpdate( );
+        daoUtil.free( );
     }
 
     /**
@@ -192,18 +191,18 @@ public final class DatabaseBlobStoreDAO implements IDatabaseBlobStoreDAO
     @Override
     public InputStream loadInputStream( String strId )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_BY_PRIMARY_KEY, BlobStoreUtils.getPlugin(  ) );
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_FIND_BY_PRIMARY_KEY, BlobStoreUtils.getPlugin( ) );
         daoUtil.setString( 1, strId );
-        daoUtil.executeQuery(  );
+        daoUtil.executeQuery( );
 
         InputStream inputStream = null;
 
-        if ( daoUtil.next(  ) )
+        if ( daoUtil.next( ) )
         {
             inputStream = daoUtil.getBinaryStream( 2 );
         }
 
-        daoUtil.free(  );
+        daoUtil.free( );
 
         return inputStream;
     }

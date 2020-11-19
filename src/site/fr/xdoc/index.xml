@@ -11,5 +11,167 @@
                 </p>
             </subsection>
         </section>
+        <section name="Installation">
+			<p>
+				Configurer la cl&#233;s priv&#233;es utilis&#233;es pour les signatures dans le fichier <strong>blobstore_context.xml</strong> :     
+			</p>
+			<div class="source">
+<pre>
+&lt;bean id="blobstore.hashService" class="fr.paris.lutece.util.signrequest.security.Sha1HashService" /&gt;
+&lt;bean id="blobstore.requestAuthenticator" class="fr.paris.lutece.util.signrequest.RequestHashAuthenticator" &gt;
+	&lt;property name="hashService" ref="blobstore.hashService" /&gt;
+	&lt;property name="signatureElements" &gt; 
+		&lt;list&gt;
+			&lt;value&gt;blobstore&lt;/value&gt;
+			&lt;value&gt;blob_key&lt;/value&gt;
+		&lt;/list&gt;
+	&lt;/property&gt;
+	&lt;property name="privateKey"&gt;
+		&lt;value&gt;<strong>change me</strong>&lt;/value&gt;
+	&lt;/property&gt;
+&lt;/bean&gt;
+</pre>
+			</div>
+        </section>
+        <section name="Impl&#233;mentation d'un blobstore dans un plugin">
+        	<p>
+        		Le plugin-blobstore ne peut fonctionner seul. Il est utilis&#233; en compl&#233;ment d'un plugin pour que ce dernier
+        		puisse stocker des donn&#233;es de taille importantes dans une base &#224; part ou sous forme de fichier syst&#232;me.
+        	</p>
+        	<p>
+        		A chaque donn&#233;es est associ&#233;e un ID blob qui est g&#233;n&#233;r&#233; al&#233;atoirement. L'utilisation
+        		de la librairie <strong>java.util.UUID</strong> assure l'unicit&#233; des identifiants.
+        	</p>
+        	<subsection name="Etape 1 : Impl&#233;mentation d'un service utilisant un service blobstore">
+        		<p>
+        			Tout d'abord, cr&#233;er un service qui poss&#232;de une variable priv&#233;e de type <strong>BlobStoreService</strong> :
+        		</p>
+<pre>
+public class MyPluginService
+{
+    private BlobStoreService _blobStoreService;
+
+    /**
+     * Set the BlobStoreService
+     * @param blobStoreService the {@link BlobStoreService}
+     */
+    public void setBlobStoreService( BlobStoreService blobStoreService )
+    {
+        _blobStoreService = blobStoreService;
+    }
+    .
+    .
+    .
+}
+</pre>
+				<p>
+					Il faut ensuite d&#233;finir le service dans le fichier XML de contexte du plugin (ex : webapp/WEB-INF/plugins/myplugin_context.xml).
+					C'est dans ce fichier qu'il faut d&#233;finir comment seront stock&#233;es les donn&#233;es (en base ou en fichier syst&#232;me). 
+				</p>
+				<p>
+					Pour stocker en base (en modifiant ce qui est en gras par ce qui va bien) :
+				</p>
+<pre>
+&lt;bean id="<strong>myplugin</strong>.blobStoreService" class="fr.paris.lutece.plugins.blobstore.service.database.DatabaseBlobStoreService"&gt;
+	&lt;property name="name" value="<strong>myplugin</strong>.blobStoreService" /&gt;
+&lt;/bean&gt;
+&lt;bean id="<strong>myplugin.myPluginService</strong>" class="<strong>fr.paris.lutece.plugins.myplugin.service.MyPluginService</strong>"&gt;
+	&lt;property name="blobStoreService" ref="<strong>myplugin</strong>.blobStoreService" /&gt;
+&lt;/bean&gt;
+</pre>
+				<p>
+					Pour stocker en fichier syst&#232;me (en modifiant ce qui est en gras par ce qui va bien)  : 
+				</p>
+<pre>
+&lt;bean id="<strong>myplugin</strong>.blobStoreService" class="fr.paris.lutece.plugins.blobstore.service.filesystem.FileSystemBlobStoreService"&gt;
+	&lt;property name="name" value="&lt;strong&gt;myplugin&lt;/strong&gt;.blobStoreService" /&gt;
+	&lt;property name="basePath" value="<strong>D:\data\blobstore</strong>" /&gt;
+	&lt;property name="depth" value="<strong>1</strong>" /&gt;
+&lt;/bean&gt;
+&lt;bean id="<strong>myplugin.myPluginService</strong>" class="<strong>fr.paris.lutece.plugins.myplugin.service.MyPluginService</strong>"&gt;
+	&lt;property name="blobStoreService" ref="<strong>myplugin</strong>.blobStoreService" /&gt;
+&lt;/bean&gt;
+</pre>
+        	</subsection>
+        	<subsection name="Etape 2 : Impl&#233;mentation des m&#233;thodes CRUD sur blobstore">
+        		<p>
+        			L'API <strong>BlobStoreService</strong> offre de nombreuses fonctionnalit&#233;es permettant de r&#233;aliser
+        			les op&#233;rations basiques de fa&#231;on simple :
+        		</p>
+        		<p>
+        			Pour une cr&#233;ation d'un blob avec un tableau de bytes ou par InputStream :
+        		</p>
+<pre>
+public void storeBlob( byte[] blob )
+{
+	// Plugin operation
+	...
+	_blobStoreService.store( blob );
+	...
+}
+
+public void storeBlob( InputStream blob )
+{
+	// Plugin operation
+	...
+	_blobStoreService.storeInputStream( blob );
+	...
+}
+</pre>
+        		<p>
+        			Pour une modification d'un blob avec un tableau de bytes ou par InputStream :
+        		</p>
+<pre>
+public void updateBlob( String strKey, byte[] blob )
+{
+	// Plugin operation
+	...
+	_blobStoreService.update( strKey, blob );
+	...
+}
+
+public void updateBlob( String strKey, InputStream blob )
+{
+	// Plugin operation
+	...
+	_blobStoreService.updateInputStream( strKey, blob );
+	...
+}
+</pre>
+				<p>
+        			Pour une suppression d'un blob :
+        		</p>
+<pre>
+public void deleteBlob( String strKey )
+{
+	// Plugin operation
+	...
+	_blobStoreService.delete( strKey );
+	...
+}
+</pre>
+        		<p>
+        			Il est &#233;galement possible d'obtenir une URL permettant de t&#233;l&#233;charger le fichier stock&#233;.
+        			Pour cela, il faut impl&#233;menter une m&#233;thode qui renvoit l'URL du blob ou du fichier :
+        		</p>
+<pre>
+public String getBlobUrl( String strKey )
+{
+	// Plugin operation
+	...
+	String strBlobUrl = _blobStoreService.getBlobUrl( strKey );
+	...
+}
+
+public String getFileUrl( String strKey )
+{
+	// Plugin operation
+	...
+	String strFileUrl = _blobStoreService.getFileUrl( strKey );
+	...
+}
+</pre>
+        	</subsection>
+        </section>
     </body>
 </document>

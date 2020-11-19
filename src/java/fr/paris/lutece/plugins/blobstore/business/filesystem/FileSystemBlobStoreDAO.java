@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,10 +47,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-
 /**
- * Uses filesystem to store blob. <i>Note that <code>strBasePath</code> is the
- * path were blobs are put.</i>
+ * Uses filesystem to store blob. <i>Note that <code>strBasePath</code> is the path were blobs are put.</i>
  */
 public class FileSystemBlobStoreDAO implements IFileSystemBlobStoreDAO
 {
@@ -65,53 +63,51 @@ public class FileSystemBlobStoreDAO implements IFileSystemBlobStoreDAO
      */
     private void createDir( final File fileLevel1 )
     {
-        if ( !fileLevel1.exists(  ) )
+        if ( !fileLevel1.exists( ) )
         {
-            fileLevel1.mkdir(  );
+            fileLevel1.mkdir( );
         }
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see
-     * fr.paris.lutece.plugins.blobstore.business.filesystem.IFileSystemBlobStoreDAO
-     * #delete(java.lang.String, java.lang.String)
+     * @see fr.paris.lutece.plugins.blobstore.business.filesystem.IFileSystemBlobStoreDAO #delete(java.lang.String, java.lang.String)
      */
     @Override
-    public boolean delete( final String strKey, final String strBasePath, final Integer depth )
-        throws IOException
+    public boolean delete( final String strKey, final String strBasePath, final Integer depth ) throws IOException
     {
         final File file = this.getPath( strKey, strBasePath, depth );
 
-        boolean ret = file.delete(  );
+        boolean ret = file.delete( );
 
         // cleans up useless remaining folders.
         if ( depth.equals( 1 ) )
         {
-            final File folderLevel1 = file.getParentFile(  );
+            final File folderLevel1 = file.getParentFile( );
 
-            if ( folderLevel1.list(  ).length == 0 )
+            if ( folderLevel1.list( ).length == 0 )
             {
-                folderLevel1.delete(  );
+                folderLevel1.delete( );
             }
         }
-        else if ( depth.equals( 2 ) )
-        {
-            final File folderLevel2 = file.getParentFile(  );
-
-            if ( folderLevel2.list(  ).length == 0 )
+        else
+            if ( depth.equals( 2 ) )
             {
-                folderLevel2.delete(  );
-            }
+                final File folderLevel2 = file.getParentFile( );
 
-            File folderLevel1 = folderLevel2.getParentFile(  );
+                if ( folderLevel2.list( ).length == 0 )
+                {
+                    folderLevel2.delete( );
+                }
 
-            if ( folderLevel1.list(  ).length == 0 )
-            {
-                folderLevel1.delete(  );
+                File folderLevel1 = folderLevel2.getParentFile( );
+
+                if ( folderLevel1.list( ).length == 0 )
+                {
+                    folderLevel1.delete( );
+                }
             }
-        }
 
         return ret;
     }
@@ -137,21 +133,22 @@ public class FileSystemBlobStoreDAO implements IFileSystemBlobStoreDAO
             final File folderLevel1 = new File( strBasePath, level1 );
             createDir( folderLevel1 );
 
-            final File folderLevel2 = new File( folderLevel1.getAbsolutePath(  ), level2 );
+            final File folderLevel2 = new File( folderLevel1.getAbsolutePath( ), level2 );
             createDir( folderLevel2 );
-            ret = new File( folderLevel2.getAbsolutePath(  ), blobstoeId );
-        }
-        else if ( depth.equals( 1 ) )
-        {
-            final String level1 = blobstoeId.substring( 0, WORD_SIZE );
-            final File folderLevel1 = new File( strBasePath, level1 );
-            createDir( folderLevel1 );
-            ret = new File( folderLevel1.getAbsolutePath(  ), blobstoeId );
+            ret = new File( folderLevel2.getAbsolutePath( ), blobstoeId );
         }
         else
-        {
-            ret = new File( strBasePath, blobstoeId );
-        }
+            if ( depth.equals( 1 ) )
+            {
+                final String level1 = blobstoeId.substring( 0, WORD_SIZE );
+                final File folderLevel1 = new File( strBasePath, level1 );
+                createDir( folderLevel1 );
+                ret = new File( folderLevel1.getAbsolutePath( ), blobstoeId );
+            }
+            else
+            {
+                ret = new File( strBasePath, blobstoeId );
+            }
 
         return ret;
     }
@@ -159,52 +156,46 @@ public class FileSystemBlobStoreDAO implements IFileSystemBlobStoreDAO
     /*
      * (non-Javadoc)
      *
-     * @see
-     * fr.paris.lutece.plugins.blobstore.business.filesystem.IFileSystemBlobStoreDAO
-     * #insert(fr.paris.lutece.plugins.blobstore.business.BytesBlobStore,
+     * @see fr.paris.lutece.plugins.blobstore.business.filesystem.IFileSystemBlobStoreDAO #insert(fr.paris.lutece.plugins.blobstore.business.BytesBlobStore,
      * java.lang.String)
      */
     @Override
-    public void insert( final BytesBlobStore blobStore, final String strBasePath, final Integer depth )
-        throws IOException, FileAlreadyExistsException
+    public void insert( final BytesBlobStore blobStore, final String strBasePath, final Integer depth ) throws IOException, FileAlreadyExistsException
     {
-        final File file = getPath( blobStore.getId(  ), strBasePath, depth );
+        final File file = getPath( blobStore.getId( ), strBasePath, depth );
 
         // create parents directories if they does not exist.
-        file.getParentFile(  ).mkdirs(  );
+        file.getParentFile( ).mkdirs( );
 
-        if ( file.exists(  ) )
+        if ( file.exists( ) )
         {
-            throw new FileAlreadyExistsException( "File " + blobStore.getId(  ) + " already exists." );
+            throw new FileAlreadyExistsException( "File " + blobStore.getId( ) + " already exists." );
         }
 
-        FileUtils.writeByteArrayToFile( file, blobStore.getValue(  ) );
+        FileUtils.writeByteArrayToFile( file, blobStore.getValue( ) );
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see
-     * fr.paris.lutece.plugins.blobstore.business.filesystem.IFileSystemBlobStoreDAO
-     * #insert(fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore,
-     * java.lang.String)
+     * @see fr.paris.lutece.plugins.blobstore.business.filesystem.IFileSystemBlobStoreDAO
+     * #insert(fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore, java.lang.String)
      */
     @Override
-    public void insert( final InputStreamBlobStore blobStore, final String strBasePath, final Integer depth )
-        throws FileAlreadyExistsException, IOException
+    public void insert( final InputStreamBlobStore blobStore, final String strBasePath, final Integer depth ) throws FileAlreadyExistsException, IOException
     {
-        final File file = this.getPath( blobStore.getId(  ), strBasePath, depth );
+        final File file = this.getPath( blobStore.getId( ), strBasePath, depth );
 
         // create parents directories if they does not exist.
-        file.getParentFile(  ).mkdirs(  );
+        file.getParentFile( ).mkdirs( );
 
-        if ( file.exists(  ) )
+        if ( file.exists( ) )
         {
-            throw new FileAlreadyExistsException( "File " + blobStore.getId(  ) + " already exists." );
+            throw new FileAlreadyExistsException( "File " + blobStore.getId( ) + " already exists." );
         }
 
         final OutputStream out = new FileOutputStream( file );
-        final InputStream in = blobStore.getInputStream(  );
+        final InputStream in = blobStore.getInputStream( );
 
         try
         {
@@ -220,22 +211,19 @@ public class FileSystemBlobStoreDAO implements IFileSystemBlobStoreDAO
     /*
      * (non-Javadoc)
      *
-     * @see
-     * fr.paris.lutece.plugins.blobstore.business.filesystem.IFileSystemBlobStoreDAO
-     * #load(java.lang.String, java.lang.String)
+     * @see fr.paris.lutece.plugins.blobstore.business.filesystem.IFileSystemBlobStoreDAO #load(java.lang.String, java.lang.String)
      */
     @Override
-    public BytesBlobStore load( final String strId, final String strBasePath, final Integer depth )
-        throws IOException
+    public BytesBlobStore load( final String strId, final String strBasePath, final Integer depth ) throws IOException
     {
         final File file = this.getPath( strId, strBasePath, depth );
 
-        if ( !file.exists(  ) )
+        if ( !file.exists( ) )
         {
             return null;
         }
 
-        final BytesBlobStore blobStore = new BytesBlobStore(  );
+        final BytesBlobStore blobStore = new BytesBlobStore( );
         blobStore.setId( strId );
         blobStore.setValue( FileUtils.readFileToByteArray( file ) );
 
@@ -245,17 +233,14 @@ public class FileSystemBlobStoreDAO implements IFileSystemBlobStoreDAO
     /*
      * (non-Javadoc)
      *
-     * @see
-     * fr.paris.lutece.plugins.blobstore.business.filesystem.IFileSystemBlobStoreDAO
-     * #loadInputStream(java.lang.String, java.lang.String)
+     * @see fr.paris.lutece.plugins.blobstore.business.filesystem.IFileSystemBlobStoreDAO #loadInputStream(java.lang.String, java.lang.String)
      */
     @Override
-    public InputStream loadInputStream( final String strId, final String strBasePath, final Integer depth )
-        throws IOException
+    public InputStream loadInputStream( final String strId, final String strBasePath, final Integer depth ) throws IOException
     {
         final File file = this.getPath( strId, strBasePath, depth );
 
-        if ( !file.exists(  ) )
+        if ( !file.exists( ) )
         {
             return null;
         }
@@ -266,38 +251,32 @@ public class FileSystemBlobStoreDAO implements IFileSystemBlobStoreDAO
     /*
      * (non-Javadoc)
      *
-     * @see
-     * fr.paris.lutece.plugins.blobstore.business.filesystem.IFileSystemBlobStoreDAO
-     * #store(fr.paris.lutece.plugins.blobstore.business.BytesBlobStore,
+     * @see fr.paris.lutece.plugins.blobstore.business.filesystem.IFileSystemBlobStoreDAO #store(fr.paris.lutece.plugins.blobstore.business.BytesBlobStore,
      * java.lang.String)
      */
     @Override
-    public void store( final BytesBlobStore blobStore, final String strBasePath, final Integer depth )
-        throws IOException
+    public void store( final BytesBlobStore blobStore, final String strBasePath, final Integer depth ) throws IOException
     {
-        final File file = getPath( blobStore.getId(  ), strBasePath, depth );
-        FileUtils.writeByteArrayToFile( file, blobStore.getValue(  ) );
+        final File file = getPath( blobStore.getId( ), strBasePath, depth );
+        FileUtils.writeByteArrayToFile( file, blobStore.getValue( ) );
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see
-     * fr.paris.lutece.plugins.blobstore.business.filesystem.IFileSystemBlobStoreDAO
-     * #storeInputStream(fr.paris.lutece.plugins.blobstore.business.
+     * @see fr.paris.lutece.plugins.blobstore.business.filesystem.IFileSystemBlobStoreDAO #storeInputStream(fr.paris.lutece.plugins.blobstore.business.
      * InputStreamBlobStore, java.lang.String)
      */
     @Override
-    public void storeInputStream( final InputStreamBlobStore blobStore, final String strBasePath, final Integer depth )
-        throws IOException
+    public void storeInputStream( final InputStreamBlobStore blobStore, final String strBasePath, final Integer depth ) throws IOException
     {
-        final File file = this.getPath( blobStore.getId(  ), strBasePath, depth );
+        final File file = this.getPath( blobStore.getId( ), strBasePath, depth );
         final OutputStream out = new FileOutputStream( file );
-        final InputStream in = blobStore.getInputStream(  );
+        final InputStream in = blobStore.getInputStream( );
 
         try
         {
-            IOUtils.copyLarge( blobStore.getInputStream(  ), out );
+            IOUtils.copyLarge( blobStore.getInputStream( ), out );
         }
         finally
         {

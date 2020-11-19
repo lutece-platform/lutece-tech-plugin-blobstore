@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2017, Mairie de Paris
+ * Copyright (c) 2002-2020, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,6 @@ package fr.paris.lutece.plugins.blobstore.service;
 
 import fr.paris.lutece.portal.service.plugin.PluginDefaultImplementation;
 
-
 /**
  *
  * BlobstorePlugin
@@ -48,7 +47,7 @@ public class BlobStorePlugin extends PluginDefaultImplementation
     /**
      * Initialize the BlobstorePlugin
      */
-    public void init(  )
+    public void init( )
     {
     }
 }
