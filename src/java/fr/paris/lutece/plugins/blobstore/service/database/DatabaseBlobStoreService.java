@@ -41,12 +41,16 @@ import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.database.DatabaseBlobStoreHome;
 import fr.paris.lutece.plugins.blobstore.business.database.IDatabaseBlobStoreHome;
+import fr.paris.lutece.plugins.blobstore.service.BlobStoreFileItem;
 import fr.paris.lutece.plugins.blobstore.service.IBlobStoreService;
 import fr.paris.lutece.plugins.blobstore.service.download.IBlobStoreDownloadUrlService;
 import fr.paris.lutece.plugins.blobstore.service.download.JSPBlobStoreDownloadUrlService;
 import fr.paris.lutece.plugins.blobstore.util.BlobStoreLibUtils;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppLogService;
+import java.io.IOException;
+import org.apache.commons.fileupload.FileItem;
 
 /**
  * 
@@ -204,6 +208,32 @@ public class DatabaseBlobStoreService implements IBlobStoreService
         }
 
         return strKey;
+    }
+
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see fr.paris.lutece.portal.service.blobstore.BlobStoreService#storeFileItem (java.io.InputStream)
+     */
+    @Override
+    public String storeFileItem( FileItem fileItem )
+    {
+        try
+        {
+            // store the file content
+            String strBlobContentKey = storeInputStream( fileItem.getInputStream( ) );
+
+            // build metadata as json file and store it
+            String strMetadata = BlobStoreFileItem.buildFileMetadata( fileItem.getName( ), fileItem.getSize( ), strBlobContentKey, fileItem.getContentType( ) );
+            String strMetadataKey = store( strMetadata.getBytes( ) );
+
+            return strMetadataKey ;
+        }
+        catch( final IOException e )
+        {
+            throw new AppException( e.getMessage( ), e );
+        }
     }
 
     /**
