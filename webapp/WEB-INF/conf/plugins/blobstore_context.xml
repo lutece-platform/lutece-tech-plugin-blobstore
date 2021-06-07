@@ -9,6 +9,21 @@
     <!-- Services -->  
     <bean id="blobstore.databaseBlobStoreHome" class="fr.paris.lutece.plugins.blobstore.business.database.DatabaseBlobStoreHome" />
     <bean id="blobstore.fileSystemBlobStoreHome" class="fr.paris.lutece.plugins.blobstore.business.filesystem.FileSystemBlobStoreHome" />
+    
+    
+    <bean id="blobstore.fileSystemBlobStoreService" class="fr.paris.lutece.plugins.blobstore.service.filesystem.FileSystemBlobStoreService" >
+        <property name="name" value="blobstore.fileSystemBlobStoreService" />
+        <property name="basePathKey" value="blobstore.file.system.path" />
+        <property name="depthKey" value="blobstore.file.system.depth" />
+    </bean>
+    
+
+    <bean id="blobstore.blobStoreFileService" class="fr.paris.lutece.plugins.blobstore.service.BlobStoreFileStorageService" >
+            <constructor-arg ref="defaultFileDownloadUrlService" />
+            <constructor-arg ref="defaultFileNoRBACService" />
+            <constructor-arg ref="blobstore.fileSystemBlobStoreService" />
+    </bean>
+    
 	
 	<bean id="blobstore.hashService" class="fr.paris.lutece.util.signrequest.security.Sha1HashService" />
 	<bean id="blobstore.requestAuthenticator" class="fr.paris.lutece.util.signrequest.RequestHashAuthenticator" >
