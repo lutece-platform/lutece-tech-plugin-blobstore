@@ -50,6 +50,8 @@ import fr.paris.lutece.plugins.blobstore.util.BlobStoreUtils;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppLogService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
+
 import org.apache.commons.fileupload.FileItem;
 
 /**
@@ -388,5 +390,15 @@ public class FileSystemBlobStoreService implements IBlobStoreService
         {
             this._intDepth = depth;
         }
+    }
+    
+    public void setBasePathKey( String key )
+    {
+        setBasePath( AppPropertiesService.getProperty( "blobstore.file.system.path", "/var/blobs/" ) );
+    }
+    
+    public void setDepthKey( String key )
+    {
+        setDepth( AppPropertiesService.getPropertyInt( "blobstore.file.system.depth", 1 ) );
     }
 }
