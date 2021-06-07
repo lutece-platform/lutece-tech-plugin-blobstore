@@ -44,6 +44,9 @@ import fr.paris.lutece.portal.service.file.IFileDownloadUrlService;
 import fr.paris.lutece.portal.service.file.IFileRBACService;
 import fr.paris.lutece.portal.service.file.IFileStoreServiceProvider;
 import fr.paris.lutece.portal.service.security.SecurityService;
+import fr.paris.lutece.portal.service.security.UserNotSignedException;
+import fr.paris.lutece.portal.service.util.AppLogService;
+
 import java.io.InputStream;
 
 import org.apache.commons.lang.StringUtils;
@@ -161,6 +164,7 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
             } 
             catch (NoSuchBlobException ex) 
             {
+                AppLogService.error( ex.getMessage( ), ex );
                 return null;
             }
             
@@ -220,9 +224,8 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
         // store the content
         String blobId = _blobStoreService.store( file.getPhysicalFile( ).getValue( ) );
         // store metadata
-        String fileId = BlobStoreFileItem.buildFileMetadata( file.getTitle( ), file.getSize( ), blobId, file.getMimeType());
-
-        return fileId;
+        String metadata = BlobStoreFileItem.buildFileMetadata( file.getTitle( ), file.getSize( ), blobId, file.getMimeType());
+        return _blobStoreService.store( metadata.getBytes( ) );
     }
 
     public void setDefault(boolean bDefault) 
@@ -288,7 +291,7 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
      * {@inheritDoc}
      */
     @Override
-    public void checkAccessRights(Map<String, String> fileData, User user) throws AccessDeniedException
+    public void checkAccessRights(Map<String, String> fileData, User user) throws AccessDeniedException, UserNotSignedException
     {
         if (_fileRBACService != null )
         {
@@ -309,7 +312,7 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
      * {@inheritDoc}
      */
     @Override
-    public File getFileFromRequestBO( HttpServletRequest request ) throws AccessDeniedException, ExpiredLinkException
+    public File getFileFromRequestBO( HttpServletRequest request ) throws AccessDeniedException, ExpiredLinkException, UserNotSignedException
     {
         Map<String, String> fileData = _fileDownloadUrlService.getRequestDataBO( request );
         
@@ -319,7 +322,7 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
         // check validity
         checkLinkValidity( fileData );
 
-        String strFileId = fileData.get( FileService.PARAMATER_FILE_ID );
+        String strFileId = fileData.get( FileService.PARAMETER_FILE_ID );
 
         return getFile( strFileId );            
     }
@@ -328,7 +331,7 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
      * {@inheritDoc}
      */
     @Override
-    public File getFileFromRequestFO(HttpServletRequest request) throws AccessDeniedException, ExpiredLinkException
+    public File getFileFromRequestFO(HttpServletRequest request) throws AccessDeniedException, ExpiredLinkException, UserNotSignedException
     {
         
         Map<String, String> fileData = _fileDownloadUrlService.getRequestDataFO( request );
@@ -339,7 +342,7 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
         // check validity
         checkLinkValidity( fileData );
 
-        String strFileId = fileData.get( FileService.PARAMATER_FILE_ID );
+        String strFileId = fileData.get( FileService.PARAMETER_FILE_ID );
 
         return getFile( strFileId );            
     }
