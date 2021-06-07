@@ -145,7 +145,25 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
     @Override
     public void delete( String strKey ) 
     {
-        _blobStoreService.delete( strKey );
+        if ( StringUtils.isNotBlank( strKey ) )
+        {
+            BlobStoreFileItem fileData;
+            
+            try {
+                fileData = new BlobStoreFileItem( strKey, _blobStoreService);
+            } 
+            catch (NoSuchBlobException ex) 
+            {
+                AppLogService.error( ex.getMessage( ), ex );
+                return ;
+            }
+            
+            // Delete file
+            _blobStoreService.delete( fileData.getFileBlobId( ) );
+            
+            // Delete metadata
+            _blobStoreService.delete( strKey );
+        }
     }
 
     /**
