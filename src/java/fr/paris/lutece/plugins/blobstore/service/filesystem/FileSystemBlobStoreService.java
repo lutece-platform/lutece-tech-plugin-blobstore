@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2020, City of Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -291,7 +291,7 @@ public class FileSystemBlobStoreService implements IBlobStoreService
             String strMetadata = BlobStoreFileItem.buildFileMetadata( fileItem.getName( ), fileItem.getSize( ), strBlobContentKey, fileItem.getContentType( ) );
             String strMetadataKey = store( strMetadata.getBytes( ) );
 
-            return strMetadataKey ;
+            return strMetadataKey;
         }
         catch( final IOException e )
         {
@@ -299,7 +299,6 @@ public class FileSystemBlobStoreService implements IBlobStoreService
         }
     }
 
-    
     /*
      * (non-Javadoc)
      * 
@@ -391,12 +390,12 @@ public class FileSystemBlobStoreService implements IBlobStoreService
             this._intDepth = depth;
         }
     }
-    
+
     public void setBasePathKey( String key )
     {
         setBasePath( AppPropertiesService.getProperty( "blobstore.file.system.path", "/var/blobs/" ) );
     }
-    
+
     public void setDepthKey( String key )
     {
         setDepth( AppPropertiesService.getPropertyInt( "blobstore.file.system.depth", 1 ) );

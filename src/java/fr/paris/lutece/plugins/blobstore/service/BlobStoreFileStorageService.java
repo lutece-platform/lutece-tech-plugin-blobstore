@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2021, Mairie de Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,6 @@ import java.io.InputStream;
 
 import org.apache.commons.lang.StringUtils;
 
-
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
@@ -70,42 +69,42 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
      */
     private static final String FILE_STORE_PROVIDER_NAME = "blobStoreProvider";
 
-    private IFileDownloadUrlService _fileDownloadUrlService ;
-    private IFileRBACService _fileRBACService ;
-    private IBlobStoreService _blobStoreService ;
+    private IFileDownloadUrlService _fileDownloadUrlService;
+    private IFileRBACService _fileRBACService;
+    private IBlobStoreService _blobStoreService;
     private boolean _bDefault;
-    
+
     /**
      * init
+     * 
      * @param fileDownloadUrlService
      * @param fileRBACService
      * @param blobStoreService
      */
-    public BlobStoreFileStorageService(IFileDownloadUrlService fileDownloadUrlService, 
-            IFileRBACService fileRBACService, IBlobStoreService blobStoreService) 
+    public BlobStoreFileStorageService( IFileDownloadUrlService fileDownloadUrlService, IFileRBACService fileRBACService, IBlobStoreService blobStoreService )
     {
         this._fileDownloadUrlService = fileDownloadUrlService;
-        this._fileRBACService = fileRBACService;        
+        this._fileRBACService = fileRBACService;
         this._blobStoreService = blobStoreService;
     }
 
-    
-    
     /**
      * get the FileRBACService
      * 
      * @return the FileRBACService
      */
-    public IFileRBACService getFileRBACService() {
+    public IFileRBACService getFileRBACService( )
+    {
         return _fileRBACService;
     }
 
     /**
      * set the FileRBACService
      * 
-     * @param fileRBACService 
+     * @param fileRBACService
      */
-    public void setFileRBACService(IFileRBACService fileRBACService) {
+    public void setFileRBACService( IFileRBACService fileRBACService )
+    {
         this._fileRBACService = fileRBACService;
     }
 
@@ -143,24 +142,25 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
      * {@inheritDoc}
      */
     @Override
-    public void delete( String strKey ) 
+    public void delete( String strKey )
     {
         if ( StringUtils.isNotBlank( strKey ) )
         {
             BlobStoreFileItem fileData;
-            
-            try {
-                fileData = new BlobStoreFileItem( strKey, _blobStoreService);
-            } 
-            catch (NoSuchBlobException ex) 
+
+            try
+            {
+                fileData = new BlobStoreFileItem( strKey, _blobStoreService );
+            }
+            catch( NoSuchBlobException ex )
             {
                 AppLogService.error( ex.getMessage( ), ex );
-                return ;
+                return;
             }
-            
+
             // Delete file
             _blobStoreService.delete( fileData.getFileBlobId( ) );
-            
+
             // Delete metadata
             _blobStoreService.delete( strKey );
         }
@@ -174,29 +174,29 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
     {
         if ( StringUtils.isNotBlank( strKey ) )
         {
-            
+
             BlobStoreFileItem fileData;
-            
-            try {
-                fileData = new BlobStoreFileItem( strKey, _blobStoreService);
-            } 
-            catch (NoSuchBlobException ex) 
+
+            try
+            {
+                fileData = new BlobStoreFileItem( strKey, _blobStoreService );
+            }
+            catch( NoSuchBlobException ex )
             {
                 AppLogService.error( ex.getMessage( ), ex );
                 return null;
             }
-            
-            
+
             File file = new File( );
-            file.setTitle(fileData.getName( ) );
-            file.setSize( (int)fileData.getSize( ) );
+            file.setTitle( fileData.getName( ) );
+            file.setSize( (int) fileData.getSize( ) );
             file.setMimeType( fileData.getContentType( ) );
-            
+
             PhysicalFile physicalFile = new PhysicalFile( );
             physicalFile.setValue( _blobStoreService.getBlob( fileData.getFileBlobId( ) ) );
-            
+
             file.setPhysicalFile( physicalFile );
-            
+
             return file;
         }
 
@@ -210,7 +210,7 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
     public String storeBytes( byte [ ] blob )
     {
 
-        return _blobStoreService.store(blob);
+        return _blobStoreService.store( blob );
     }
 
     /**
@@ -229,8 +229,8 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
     @Override
     public String storeFileItem( FileItem fileItem )
     {
-        
-        return  _blobStoreService.storeFileItem( fileItem );
+
+        return _blobStoreService.storeFileItem( fileItem );
     }
 
     /**
@@ -242,11 +242,11 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
         // store the content
         String blobId = _blobStoreService.store( file.getPhysicalFile( ).getValue( ) );
         // store metadata
-        String metadata = BlobStoreFileItem.buildFileMetadata( file.getTitle( ), file.getSize( ), blobId, file.getMimeType());
+        String metadata = BlobStoreFileItem.buildFileMetadata( file.getTitle( ), file.getSize( ), blobId, file.getMimeType( ) );
         return _blobStoreService.store( metadata.getBytes( ) );
     }
 
-    public void setDefault(boolean bDefault) 
+    public void setDefault( boolean bDefault )
     {
         this._bDefault = bDefault;
     }
@@ -255,7 +255,7 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
      * {@inheritDoc}
      */
     @Override
-    public boolean isDefault( ) 
+    public boolean isDefault( )
     {
         return _bDefault;
     }
@@ -264,7 +264,7 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
      * {@inheritDoc}
      */
     @Override
-    public InputStream getInputStream(String strKey) 
+    public InputStream getInputStream( String strKey )
     {
         return _blobStoreService.getBlobInputStream( strKey );
     }
@@ -273,7 +273,7 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
      * {@inheritDoc}
      */
     @Override
-    public String getFileDownloadUrlFO(String strKey) 
+    public String getFileDownloadUrlFO( String strKey )
     {
         return _fileDownloadUrlService.getFileDownloadUrlFO( strKey, getName( ) );
     }
@@ -282,16 +282,16 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
      * {@inheritDoc}
      */
     @Override
-    public String getFileDownloadUrlFO(String strKey, Map<String,String> additionnalData) 
+    public String getFileDownloadUrlFO( String strKey, Map<String, String> additionnalData )
     {
         return _fileDownloadUrlService.getFileDownloadUrlFO( strKey, additionnalData, getName( ) );
     }
- 
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getFileDownloadUrlBO(String strKey) 
+    public String getFileDownloadUrlBO( String strKey )
     {
         return _fileDownloadUrlService.getFileDownloadUrlBO( strKey, getName( ) );
     }
@@ -300,7 +300,7 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
      * {@inheritDoc}
      */
     @Override
-    public String getFileDownloadUrlBO(String strKey, Map<String,String> additionnalData)  
+    public String getFileDownloadUrlBO( String strKey, Map<String, String> additionnalData )
     {
         return _fileDownloadUrlService.getFileDownloadUrlBO( strKey, additionnalData, getName( ) );
     }
@@ -309,19 +309,19 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
      * {@inheritDoc}
      */
     @Override
-    public void checkAccessRights(Map<String, String> fileData, User user) throws AccessDeniedException, UserNotSignedException
+    public void checkAccessRights( Map<String, String> fileData, User user ) throws AccessDeniedException, UserNotSignedException
     {
-        if (_fileRBACService != null )
+        if ( _fileRBACService != null )
         {
-            _fileRBACService.checkAccessRights( fileData, user);
+            _fileRBACService.checkAccessRights( fileData, user );
         }
     }
-    
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public void checkLinkValidity( Map<String,String> fileData ) throws ExpiredLinkException
+    public void checkLinkValidity( Map<String, String> fileData ) throws ExpiredLinkException
     {
         _fileDownloadUrlService.checkLinkValidity( fileData );
     }
@@ -333,7 +333,7 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
     public File getFileFromRequestBO( HttpServletRequest request ) throws AccessDeniedException, ExpiredLinkException, UserNotSignedException
     {
         Map<String, String> fileData = _fileDownloadUrlService.getRequestDataBO( request );
-        
+
         // check access rights
         checkAccessRights( fileData, AdminAuthenticationService.getInstance( ).getRegisteredUser( request ) );
 
@@ -342,26 +342,26 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
 
         String strFileId = fileData.get( FileService.PARAMETER_FILE_ID );
 
-        return getFile( strFileId );            
+        return getFile( strFileId );
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public File getFileFromRequestFO(HttpServletRequest request) throws AccessDeniedException, ExpiredLinkException, UserNotSignedException
+    public File getFileFromRequestFO( HttpServletRequest request ) throws AccessDeniedException, ExpiredLinkException, UserNotSignedException
     {
-        
+
         Map<String, String> fileData = _fileDownloadUrlService.getRequestDataFO( request );
 
         // check access rights
-        checkAccessRights( fileData, SecurityService.getInstance().getRegisteredUser(request) );
+        checkAccessRights( fileData, SecurityService.getInstance( ).getRegisteredUser( request ) );
 
         // check validity
         checkLinkValidity( fileData );
 
         String strFileId = fileData.get( FileService.PARAMETER_FILE_ID );
 
-        return getFile( strFileId );            
+        return getFile( strFileId );
     }
 }

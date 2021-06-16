@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2020, City of Paris
+ * Copyright (c) 2002-2021, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -210,7 +210,6 @@ public class DatabaseBlobStoreService implements IBlobStoreService
         return strKey;
     }
 
-
     /*
      * (non-Javadoc)
      * 
@@ -228,7 +227,7 @@ public class DatabaseBlobStoreService implements IBlobStoreService
             String strMetadata = BlobStoreFileItem.buildFileMetadata( fileItem.getName( ), fileItem.getSize( ), strBlobContentKey, fileItem.getContentType( ) );
             String strMetadataKey = store( strMetadata.getBytes( ) );
 
-            return strMetadataKey ;
+            return strMetadataKey;
         }
         catch( final IOException e )
         {
