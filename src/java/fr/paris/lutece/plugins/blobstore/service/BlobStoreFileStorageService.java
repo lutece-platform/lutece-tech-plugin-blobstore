@@ -49,7 +49,7 @@ import fr.paris.lutece.portal.service.util.AppLogService;
 
 import java.io.InputStream;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
