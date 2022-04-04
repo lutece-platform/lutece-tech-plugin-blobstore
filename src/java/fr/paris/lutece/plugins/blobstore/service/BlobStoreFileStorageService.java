@@ -172,6 +172,28 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
     @Override
     public File getFile( String strKey )
     {
+        return getFile( strKey, true );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public File getFileMetaData( String strKey )
+    {
+        return getFile( strKey, false );
+    }
+
+    /**
+     * get file from database
+     * 
+     * @param strKey
+     * @param withPhysicalFile
+     * 
+     * @return the file with the physical file content if withPhysicalFile is true
+     */
+    public File getFile( String strKey, boolean withPhysicalFile )
+    {
         if ( StringUtils.isNotBlank( strKey ) )
         {
 
@@ -192,10 +214,13 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
             file.setSize( (int) fileData.getSize( ) );
             file.setMimeType( fileData.getContentType( ) );
 
-            PhysicalFile physicalFile = new PhysicalFile( );
-            physicalFile.setValue( _blobStoreService.getBlob( fileData.getFileBlobId( ) ) );
+            if ( withPhysicalFile )
+            {
+	            PhysicalFile physicalFile = new PhysicalFile( );
+	            physicalFile.setValue( _blobStoreService.getBlob( fileData.getFileBlobId( ) ) );
 
-            file.setPhysicalFile( physicalFile );
+	            file.setPhysicalFile( physicalFile );
+	        }
 
             return file;
         }
@@ -364,4 +389,5 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
 
         return getFile( strFileId );
     }
+
 }
