@@ -213,7 +213,8 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
             file.setTitle( fileData.getName( ) );
             file.setSize( (int) fileData.getSize( ) );
             file.setMimeType( fileData.getContentType( ) );
-
+            file.setFileKey( strKey );
+            
             if ( withPhysicalFile )
             {
 	            PhysicalFile physicalFile = new PhysicalFile( );
