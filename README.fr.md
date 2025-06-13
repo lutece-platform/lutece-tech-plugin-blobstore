@@ -9,7 +9,7 @@
 
 Ce plugin permet de stocker des données de taille importante, que ce soit en base de données ou en fichier système.
 
-# Installation
+## Configuration
 
 Configurer la clés privées utilisées pour les signatures dans le fichier **blobstore_context.xml** :
 
@@ -31,14 +31,53 @@ Configurer la clés privées utilisées pour les signatures dans le fichier **bl
 
 ```
 
-# Implémentation d'un blobstore dans un plugin
+## Usage
 
-Le plugin-blobstore ne peut fonctionner seul. Il est utiliséen complément d'un plugin pour que ce dernier puisse stocker des données de taille importantes dans une baseàpart ou sous forme de fichier système.
+Il existe plusieurs façons d'utiliser le plugin-blobstore.
+
+- A: Utilisation via les FileService avec le blobStoreFileServiceProvider (recommandé)
+
+- B: Utilisation en complément d'un plugin pour que ce dernier puisse stocker des données de taille importantes dans une baseàpart ou sous forme de fichier système.
 
 A chaque données est associée un ID blob qui est généréaléatoirement. L'utilisation de la librairie **java.util.UUID** assure l'unicitédes identifiants.
 
-## Etape 1 : Implémentation d'un service utilisant un service blobstore
 
+
+
+ **A/ Utilisation via le blobStoreFileServiceProvider** 
+
+
+
+Le fileStoreService peut être ajouté à la classe Home :
+```
+
+private static IFileStoreServiceProvider _fileStoreService = FileService.getInstance( ).getFileStoreServiceProvider( "blobStoreProvider");
+
+```
+UTilisation ensuite du fileStoreServiceProvider :
+```
+
+...
+	// get the file in multipart request and store it
+        IFileStoreServiceProvider fileStoreService = MyHome.getFileStoreServiceProvider( );
+        FileItem file = multipartRequest.getFile( "file" );
+      
+        if ( file != null  	&& file.getSize( ) > 0 )
+        {
+            try
+            {
+                String strFileStoreKey = fileStoreService.storeFileItem( file );
+...
+	// get an URL for display
+	String strFileUrl = fileStoreService.getFileDownloadUrlBO( strFileKey );
+...
+
+```
+
+
+
+
+ **B/ Etape 1 : Implémentation d'un service utilisant un service blobstore** 
 Tout d'abord, créer un service qui possède une variable privée de type **BlobStoreService** :
 
 ```
@@ -92,8 +131,10 @@ Pour stocker en fichier système (en modifiant ce qui est en gras par ce qui va 
 
 ```
 
-## Etape 2 : Implémentation des méthodes CRUD sur blobstore
 
+
+
+ **Etape 2 : Implémentation des méthodes CRUD sur blobstore** 
 L'API **BlobStoreService** offre de nombreuses fonctionnalitées permettant de réaliser les opérations basiques de façon simple :
 
 Pour une création d'un blob avec un tableau de bytes ou par InputStream :

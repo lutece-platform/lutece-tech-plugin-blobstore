@@ -9,7 +9,7 @@
 
 This plugin handles the big data storage, in database or file system.
 
-# Installation
+## Configuration
 
 Configure the private key for the signature in the file **blobstore_context.xml** :
 
@@ -31,13 +31,56 @@ Configure the private key for the signature in the file **blobstore_context.xml*
 
 ```
 
-# BlobStore implementation in a plugin
+## Usage
 
-The plugin-blobstore cannot run alone. It is used in addition of a plugin in which the latter will be able to store big data in a distinct database or in file system.
+There are two ways of using the plugin-blobstore.
+
+- A: Use as a FileService via the blobStoreFileServiceProvider (recommanded)
+
+- B: Use in addition of a plugin in which the latter will be able to store big data in a distinct database or in file system.
 
 Each data is linked to an ID blob which is generated randomly. The use of the library **java.util.UUID** ensures the unicity of the ids.
 
-## Step 1 : Implentation of a service that will use a BlobStoreService
+
+
+
+ **A/ Use the blobStoreFileServiceProvider** 
+
+
+
+The fileStoreService can be added to the Home class :
+```
+
+private static IFileStoreServiceProvider _fileStoreService = FileService.getInstance( ).getFileStoreServiceProvider( "blobStoreProvider");
+
+```
+You can then use that fileStoreService :
+```
+
+...
+	// get the file in multipart request and store it
+        IFileStoreServiceProvider fileStoreService = MyHome.getFileStoreServiceProvider( );
+        FileItem file = multipartRequest.getFile( "file" );
+      
+        if ( file != null  	&& file.getSize( ) > 0 )
+        {
+            try
+            {
+                String strFileStoreKey = fileStoreService.storeFileItem( file );
+...
+	// get an URL for display
+	String strFileUrl = fileStoreService.getFileDownloadUrlBO( strFileKey );
+...
+
+```
+
+
+
+
+ **B/ Step 1 : Implentation of a service that will use a BlobStoreService"** 
+
+
+
 
 First of all, create a new service that has a private attribute type **BlobStoreService** :
 
@@ -92,7 +135,13 @@ To store in file system (modify the bold words) :
 
 ```
 
-## Step 2 : Implementation of basic methods of the BlobStoreService
+
+
+
+ **B/ Step 2 : Implementation of basic methods of the BlobStoreService** 
+
+
+
 
 The API of **BlobStoreService** offers several functionnalities that allows to implements basic operation?
 

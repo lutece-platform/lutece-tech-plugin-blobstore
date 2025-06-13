@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document>
     <properties>
-        <title>Introduction</title>
+        <title>BlobStore</title>
     </properties>
+         <head>
+        <!-- Keywords example : "cms, authentication, cms, workflow, seo, collaborative, ..." 
+             Use the language of this xdoc -->
+        <meta name="keywords" content="fichier, fileservice, blob" />
+    </head>
     <body>
         <section name="Descriptif du plugin">
             <subsection name="Introduction">
@@ -10,8 +15,9 @@
                 	Ce plugin permet de stocker des donn&#233;es de taille importante, que ce soit en base de donn&#233;es ou en fichier syst&#232;me.
                 </p>
             </subsection>
-        </section>
-        <section name="Installation">
+     
+      	   <subsection name="Configuration">
+
 			<p>
 				Configurer la cl&#233;s priv&#233;es utilis&#233;es pour les signatures dans le fichier <strong>blobstore_context.xml</strong> :     
 			</p>
@@ -32,17 +38,58 @@
 &lt;/bean&gt;
 </pre>
 			</div>
-        </section>
-        <section name="Impl&#233;mentation d'un blobstore dans un plugin">
-        	<p>
-        		Le plugin-blobstore ne peut fonctionner seul. Il est utilis&#233; en compl&#233;ment d'un plugin pour que ce dernier
-        		puisse stocker des donn&#233;es de taille importantes dans une base &#224; part ou sous forme de fichier syst&#232;me.
-        	</p>
+			
+	</subsection>
+        
+        <subsection name="Usage">
+        	<p>	Il existe plusieurs façons d'utiliser le plugin-blobstore.      	</p>
+        	<p>	- A: Utilisation via les FileService avec le blobStoreFileServiceProvider (recommandé)</p>
+        	<p>	- B: Utilisation en compl&#233;ment d'un plugin pour que ce dernier
+        		puisse stocker des donn&#233;es de taille importantes dans une base &#224; part ou sous forme de fichier syst&#232;me.</p>
+
         	<p>
         		A chaque donn&#233;es est associ&#233;e un ID blob qui est g&#233;n&#233;r&#233; al&#233;atoirement. L'utilisation
         		de la librairie <strong>java.util.UUID</strong> assure l'unicit&#233; des identifiants.
         	</p>
-        	<subsection name="Etape 1 : Impl&#233;mentation d'un service utilisant un service blobstore">
+        
+        <p/><p/>
+        
+  <strong>A/  Utilisation via le blobStoreFileServiceProvider </strong>	
+  
+   <p/><p/>
+
+Le fileStoreService peut être ajouté à la classe Home   : 
+
+<pre>
+private static IFileStoreServiceProvider _fileStoreService = FileService.getInstance( ).getFileStoreServiceProvider( "blobStoreProvider");
+</pre>
+
+UTilisation ensuite du fileStoreServiceProvider : 
+
+<pre>
+...
+	// get the file in multipart request and store it
+        IFileStoreServiceProvider fileStoreService = MyHome.getFileStoreServiceProvider( );
+        FileItem file = multipartRequest.getFile( "file" );
+      
+        if ( file != null  	&amp;&amp; file.getSize( ) > 0 )
+        {
+            try
+            {
+                String strFileStoreKey = fileStoreService.storeFileItem( file );
+...
+	// get an URL for display
+	String strFileUrl = fileStoreService.getFileDownloadUrlBO( strFileKey );
+...
+</pre>
+
+
+ <p/><p/>
+
+			
+			
+
+           <strong>B/ Etape 1 : Impl&#233;mentation d'un service utilisant un service blobstore   </strong>
         		<p>
         			Tout d'abord, cr&#233;er un service qui poss&#232;de une variable priv&#233;e de type <strong>BlobStoreService</strong> :
         		</p>
@@ -92,8 +139,8 @@ public class MyPluginService
 	&lt;property name="blobStoreService" ref="<strong>myplugin</strong>.blobStoreService" /&gt;
 &lt;/bean&gt;
 </pre>
-        	</subsection>
-        	<subsection name="Etape 2 : Impl&#233;mentation des m&#233;thodes CRUD sur blobstore">
+        <p/><p/>
+        	   <strong>Etape 2 : Impl&#233;mentation des m&#233;thodes CRUD sur blobstore   </strong>
         		<p>
         			L'API <strong>BlobStoreService</strong> offre de nombreuses fonctionnalit&#233;es permettant de r&#233;aliser
         			les op&#233;rations basiques de fa&#231;on simple :
