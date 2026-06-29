@@ -36,6 +36,7 @@ package fr.paris.lutece.plugins.blobstore.business.filesystem;
 import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.util.http.SecurityUtil;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -122,8 +123,10 @@ public class FileSystemBlobStoreDAO implements IFileSystemBlobStoreDAO
      * @param depth
      * @return the path
      */
-    private File getPath( final String blobstoeId, final String strBasePath, Integer depth )
+    private File getPath( final String blobstoeId, final String strBasePath, Integer depth ) throws IOException
     {
+        checkBlobId( blobstoeId );
+
         final File ret;
 
         if ( depth.equals( 2 ) )
@@ -150,7 +153,48 @@ public class FileSystemBlobStoreDAO implements IFileSystemBlobStoreDAO
                 ret = new File( strBasePath, blobstoeId );
             }
 
+        checkWithinBase( ret, strBasePath );
+
         return ret;
+    }
+
+    /**
+     * Checks that the resolved file actually resides inside the base directory once symbolic links and relative segments have been normalized. This is a
+     * defense-in-depth control performed after the path has been rebuilt, complementing the {@link #checkBlobId(String)} input validation.
+     *
+     * @param file
+     *            the resolved file
+     * @param strBasePath
+     *            the base path the file must stay within
+     * @throws IOException
+     *             if the canonical path of the file escapes the base directory
+     */
+    private void checkWithinBase( final File file, final String strBasePath ) throws IOException
+    {
+        final String strCanonicalBase = new File( strBasePath ).getCanonicalPath( );
+        final String strCanonicalFile = file.getCanonicalPath( );
+
+        if ( !strCanonicalFile.equals( strCanonicalBase ) && !strCanonicalFile.startsWith( strCanonicalBase + File.separator ) )
+        {
+            throw new IOException( "Invalid blob id : the resolved path escapes the blobstore base directory" );
+        }
+    }
+
+    /**
+     * Checks that the blob id cannot be used to escape the base directory through path traversal. Legitimate blob ids are generated as random UUIDs
+     * and therefore never contain path manipulation characters.
+     *
+     * @param strBlobId
+     *            the blob id to check
+     * @throws IOException
+     *             if the blob id is null, empty or contains path manipulation characters
+     */
+    private void checkBlobId( final String strBlobId ) throws IOException
+    {
+        if ( ( strBlobId == null ) || strBlobId.isEmpty( ) || SecurityUtil.containsPathManipulationChars( null, strBlobId ) )
+        {
+            throw new IOException( "Invalid blob id : a blob id must not contain path manipulation characters" );
+        }
     }
 
     /*
