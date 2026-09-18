@@ -11,23 +11,23 @@ Ce plugin permet de stocker des données de taille importante, que ce soit en ba
 
 ## Configuration
 
-Configurer la clés privées utilisées pour les signatures dans le fichier **blobstore_context.xml** :
+Configurer la clé privée utilisée pour signer les URL de téléchargement dans le fichier **webapp/WEB-INF/conf/plugins/blobstore.properties** :
 
 ```
 
-<bean id="blobstore.hashService" class="fr.paris.lutece.util.signrequest.security.Sha1HashService" />
-<bean id="blobstore.requestAuthenticator" class="fr.paris.lutece.util.signrequest.RequestHashAuthenticator" >
-	<property name="hashService" ref="blobstore.hashService" />
-	<property name="signatureElements" > 
-		<list>
-			<value>blobstore</value>
-			<value>blob_key</value>
-		</list>
-	</property>
-	<property name="privateKey">
-		<value> **change me** </value>
-	</property>
-</bean>
+blobstore.requestAuthenticator.name=signrequest.RequestHashAuthenticator
+blobstore.requestAuthenticator.cfg.hashService=signrequest.Sha1HashService
+blobstore.requestAuthenticator.cfg.signatureElements=blobstore,blob_key
+blobstore.requestAuthenticator.cfg.privateKey= **change me** 
+
+```
+
+Le stockage fichier système lit son répertoire racine et sa profondeur dans le même fichier. Les deux passent par MicroProfile Config : une propriété système, une variable d'environnement **BLOBSTORE_FILE_SYSTEM_PATH** ou un fichier sous **override/** l'emportent sur la valeur livrée ici, ce qui permet à un conteneur d'obtenir un chemin accessible en écriture sans reconstruire :
+
+```
+
+blobstore.file.system.path=/var/blobs/
+blobstore.file.system.depth=1
 
 ```
 
@@ -48,10 +48,11 @@ A chaque données est associée un ID blob qui est généréaléatoirement. L'ut
 
 
 
-Le fileStoreService peut être ajouté à la classe Home :
+Le fileStoreService peut être ajouté à la classe Home. Une Home est une façade statique : elle résout le FileService via CDI plutôt que par injection :
 ```
 
-private static IFileStoreServiceProvider _fileStoreService = FileService.getInstance( ).getFileStoreServiceProvider( "blobStoreProvider");
+private static IFileStoreServiceProvider _fileStoreService = CDI.current( ).select( FileService.class ).get( )
+        .getFileStoreServiceProvider( "blobStoreProvider" );
 
 ```
 UTilisation ensuite du fileStoreServiceProvider :
@@ -60,13 +61,20 @@ UTilisation ensuite du fileStoreServiceProvider :
 ...
 	// get the file in multipart request and store it
         IFileStoreServiceProvider fileStoreService = MyHome.getFileStoreServiceProvider( );
-        FileItem file = multipartRequest.getFile( "file" );
+        MultipartItem file = multipartRequest.getFile( "file" );
       
         if ( file != null  	&& file.getSize( ) > 0 )
         {
             try
             {
                 String strFileStoreKey = fileStoreService.storeFileItem( file );
+                ...
+            }
+            catch( FileServiceException e )
+            {
+                ...
+            }
+        }
 ...
 	// get an URL for display
 	String strFileUrl = fileStoreService.getFileDownloadUrlBO( strFileKey );
@@ -78,22 +86,16 @@ UTilisation ensuite du fileStoreServiceProvider :
 
 
  **B/ Etape 1 : Implémentation d'un service utilisant un service blobstore** 
-Tout d'abord, créer un service qui possède une variable privée de type **BlobStoreService** :
+Le plugin fournit les deux stockages sous forme de beans CDI. Choisir l'un par son nom et l'injecter dans son service :
 
 ```
 
+@ApplicationScoped
 public class MyPluginService
 {
-    private BlobStoreService _blobStoreService;
-
-    /**
-     * Set the BlobStoreService
-     * @param blobStoreService the {@link BlobStoreService}
-     */
-    public void setBlobStoreService( BlobStoreService blobStoreService )
-    {
-        _blobStoreService = blobStoreService;
-    }
+    @Inject
+    @Named( "blobstore.databaseBlobStoreService" )
+    private IBlobStoreService _blobStoreService;
     .
     .
     .
@@ -101,33 +103,17 @@ public class MyPluginService
 
 ```
 
-Il faut ensuite définir le service dans le fichier XML de contexte du plugin (ex : webapp/WEB-INF/plugins/myplugin_context.xml). C'est dans ce fichier qu'il faut définir comment seront stockées les données (en base ou en fichier système).
+ **blobstore.databaseBlobStoreService** stocke en base, **blobstore.fileSystemBlobStoreService** stocke en fichier système. Les deux sont configurés dans webapp/WEB-INF/conf/plugins/blobstore.properties : un plugin consommateur n'a rien à déclarer. Un consommateur qui a besoin de son propre stockage nommé, une autre base ou un autre répertoire racine, écrit son propre producteur CDI.
 
-Pour stocker en base (en modifiant ce qui est en gras par ce qui va bien) :
-
-```
-
-<bean id=" **myplugin** .blobStoreService" class="fr.paris.lutece.plugins.blobstore.service.database.DatabaseBlobStoreService">
-	<property name="name" value=" **myplugin** .blobStoreService" />
-</bean>
-<bean id=" **myplugin.myPluginService** " class=" **fr.paris.lutece.plugins.myplugin.service.MyPluginService** ">
-	<property name="blobStoreService" ref=" **myplugin** .blobStoreService" />
-</bean>
+Lorsque le stockage n'est connu qu'à l'exécution (un nom lu dans une requête ou dans une propriété), le sélectionner par programmation. **NamedLiteral.of** refuse une valeur nulle : vérifier le nom avant :
 
 ```
 
-Pour stocker en fichier système (en modifiant ce qui est en gras par ce qui va bien) :
-
-```
-
-<bean id=" **myplugin** .blobStoreService" class="fr.paris.lutece.plugins.blobstore.service.filesystem.FileSystemBlobStoreService">
-	<property name="name" value="<strong>myplugin</strong>.blobStoreService" />
-	<property name="basePath" value=" **D:\data\blobstore** " />
-	<property name="depth" value=" **1** " />
-</bean>
-<bean id=" **myplugin.myPluginService** " class=" **fr.paris.lutece.plugins.myplugin.service.MyPluginService** ">
-	<property name="blobStoreService" ref=" **myplugin** .blobStoreService" />
-</bean>
+if ( StringUtils.isNotBlank( strBlobStoreName ) )
+{
+    IBlobStoreService blobStoreService = CDI.current( )
+            .select( IBlobStoreService.class, NamedLiteral.of( strBlobStoreName ) ).get( );
+}
 
 ```
 

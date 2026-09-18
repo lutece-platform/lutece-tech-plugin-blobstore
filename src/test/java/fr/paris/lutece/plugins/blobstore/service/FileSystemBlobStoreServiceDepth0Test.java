@@ -36,8 +36,12 @@ package fr.paris.lutece.plugins.blobstore.service;
 import fr.paris.lutece.plugins.blobstore.service.filesystem.FileSystemBlobStoreService;
 import fr.paris.lutece.test.LuteceTestCase;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -56,6 +60,11 @@ public class FileSystemBlobStoreServiceDepth0Test extends LuteceTestCase
 
     /** The Constant FILE_NAME. */
     private static final String FILE_NAME = "testblob.txt";
+
+    /** The store under test, injected so that its blob store home is resolved by CDI. */
+    @Inject
+    @Named( FileSystemBlobStoreService.BEAN_SERVICE )
+    private FileSystemBlobStoreService _service;
 
     /**
      * Gets the base directory.
@@ -78,11 +87,10 @@ public class FileSystemBlobStoreServiceDepth0Test extends LuteceTestCase
      */
     private FileSystemBlobStoreService getService( final String baseDirectory, final Integer depth )
     {
-        FileSystemBlobStoreService service = new FileSystemBlobStoreService( );
-        service.setBasePath( baseDirectory );
-        service.setDepth( depth );
+        _service.setBasePath( baseDirectory );
+        _service.setDepth( depth );
 
-        return service;
+        return _service;
     }
 
     /**
@@ -91,6 +99,7 @@ public class FileSystemBlobStoreServiceDepth0Test extends LuteceTestCase
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
+    @Test
     public void testCreate( ) throws IOException
     {
         clearBlobStore( );
@@ -130,6 +139,7 @@ public class FileSystemBlobStoreServiceDepth0Test extends LuteceTestCase
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
+    @Test
     public void testUpdate( ) throws IOException
     {
         clearBlobStore( );
@@ -177,6 +187,7 @@ public class FileSystemBlobStoreServiceDepth0Test extends LuteceTestCase
      * @throws IOException
      *             Signals that an I/O exception has occurred.
      */
+    @Test
     public void testDelete( ) throws IOException
     {
         clearBlobStore( );

@@ -40,39 +40,86 @@ import java.io.InputStream;
 import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.filesystem.FileAlreadyExistsException;
-import fr.paris.lutece.plugins.blobstore.business.filesystem.FileSystemBlobStoreHome;
 import fr.paris.lutece.plugins.blobstore.business.filesystem.IFileSystemBlobStoreHome;
 import fr.paris.lutece.plugins.blobstore.service.BlobStoreFileItem;
 import fr.paris.lutece.plugins.blobstore.service.IBlobStoreService;
 import fr.paris.lutece.plugins.blobstore.service.download.IBlobStoreDownloadUrlService;
 import fr.paris.lutece.plugins.blobstore.service.download.JSPBlobStoreDownloadUrlService;
 import fr.paris.lutece.plugins.blobstore.util.BlobStoreUtils;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppLogService;
-import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
-import org.apache.commons.fileupload.FileItem;
+import fr.paris.lutece.portal.service.upload.MultipartItem;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
  * FileSystemBlobStoreService.
  */
+@ApplicationScoped
+@Named( FileSystemBlobStoreService.BEAN_SERVICE )
 public class FileSystemBlobStoreService implements IBlobStoreService
 {
+    /** The CDI bean name of the file system blob store shipped by the plugin. */
+    public static final String BEAN_SERVICE = "blobstore.fileSystemBlobStoreService";
+
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
+
+    /** The configuration key holding the base path. */
+    private static final String PROPERTY_BASE_PATH = "blobstore.file.system.path";
+
+    /** The configuration key holding the depth. */
+    private static final String PROPERTY_DEPTH = "blobstore.file.system.depth";
+
+    /** The base path used when the key holds no value. */
+    private static final String DEFAULT_BASE_PATH = "/var/blobs/";
+
+    /** The depth used when the key holds no value. */
+    private static final String DEFAULT_DEPTH = "1";
 
     /** The base path. */
     private String _strBasePath;
 
-    /** The name. */
+    /** The name : it is put in the download URLs, which resolve the store back by that name. */
+    @Inject
+    @ConfigProperty( name = "blobstore.fileSystemBlobStoreService.name", defaultValue = BEAN_SERVICE )
     private String _strName;
 
     /** The depth. */
     private Integer _intDepth = 0;
 
+    /** The configured base path. */
+    @Inject
+    @ConfigProperty( name = PROPERTY_BASE_PATH, defaultValue = DEFAULT_BASE_PATH )
+    private String _strConfiguredBasePath;
+
+    /** The configured depth. */
+    @Inject
+    @ConfigProperty( name = PROPERTY_DEPTH, defaultValue = DEFAULT_DEPTH )
+    private Integer _nConfiguredDepth;
+
     /** Uses {@link JSPBlobStoreDownloadUrlService} as default one. */
     private IBlobStoreDownloadUrlService _downloadUrlService = new JSPBlobStoreDownloadUrlService( );
+
+    /** The home of the blobs stored on the file system. */
+    @Inject
+    private IFileSystemBlobStoreHome _fileSystemBlobStoreHome;
+
+    /**
+     * Applies the configured base path and depth.
+     */
+    @PostConstruct
+    public void init( )
+    {
+        setBasePath( _strConfiguredBasePath );
+        setDepth( _nConfiguredDepth );
+    }
 
     /**
      * Gets the downloadService.
@@ -158,8 +205,7 @@ public class FileSystemBlobStoreService implements IBlobStoreService
     {
         try
         {
-            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService.getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
-            fileSystemBlobStoreHome.remove( strKey, getBasePath( ), getDepth( ) );
+            _fileSystemBlobStoreHome.remove( strKey, getBasePath( ), getDepth( ) );
         }
         catch( final IOException e )
         {
@@ -179,8 +225,7 @@ public class FileSystemBlobStoreService implements IBlobStoreService
 
         try
         {
-            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService.getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
-            blob = fileSystemBlobStoreHome.findByPrimaryKey( strKey, getBasePath( ), getDepth( ) );
+            blob = _fileSystemBlobStoreHome.findByPrimaryKey( strKey, getBasePath( ), getDepth( ) );
         }
         catch( final IOException e )
         {
@@ -202,9 +247,7 @@ public class FileSystemBlobStoreService implements IBlobStoreService
     {
         try
         {
-            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService.getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
-
-            return fileSystemBlobStoreHome.findByPrimaryKeyInputStream( strKey, getBasePath( ), getDepth( ) );
+            return _fileSystemBlobStoreHome.findByPrimaryKeyInputStream( strKey, getBasePath( ), getDepth( ) );
         }
         catch( final IOException ioe )
         {
@@ -229,8 +272,7 @@ public class FileSystemBlobStoreService implements IBlobStoreService
 
         try
         {
-            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService.getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
-            fileSystemBlobStoreHome.create( blobStore, getBasePath( ), getDepth( ) );
+            _fileSystemBlobStoreHome.create( blobStore, getBasePath( ), getDepth( ) );
         }
         catch( final IOException e )
         {
@@ -259,8 +301,7 @@ public class FileSystemBlobStoreService implements IBlobStoreService
 
         try
         {
-            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService.getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
-            fileSystemBlobStoreHome.createInputStream( blob, getBasePath( ), getDepth( ) );
+            _fileSystemBlobStoreHome.createInputStream( blob, getBasePath( ), getDepth( ) );
         }
         catch( final IOException e )
         {
@@ -280,7 +321,7 @@ public class FileSystemBlobStoreService implements IBlobStoreService
      * @see fr.paris.lutece.portal.service.blobstore.BlobStoreService#storeFileItem (java.io.InputStream)
      */
     @Override
-    public String storeFileItem( FileItem fileItem )
+    public String storeFileItem( MultipartItem fileItem )
     {
         try
         {
@@ -313,8 +354,7 @@ public class FileSystemBlobStoreService implements IBlobStoreService
 
         try
         {
-            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService.getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
-            fileSystemBlobStoreHome.update( blobStore, getBasePath( ), getDepth( ) );
+            _fileSystemBlobStoreHome.update( blobStore, getBasePath( ), getDepth( ) );
         }
         catch( final IOException e )
         {
@@ -336,8 +376,7 @@ public class FileSystemBlobStoreService implements IBlobStoreService
 
         try
         {
-            IFileSystemBlobStoreHome fileSystemBlobStoreHome = SpringContextService.getBean( FileSystemBlobStoreHome.BEAN_SERVICE );
-            fileSystemBlobStoreHome.updateInputStream( blob, getBasePath( ), getDepth( ) );
+            _fileSystemBlobStoreHome.updateInputStream( blob, getBasePath( ), getDepth( ) );
         }
         catch( final IOException e )
         {
@@ -391,13 +430,4 @@ public class FileSystemBlobStoreService implements IBlobStoreService
         }
     }
 
-    public void setBasePathKey( String key )
-    {
-        setBasePath( AppPropertiesService.getProperty( "blobstore.file.system.path", "/var/blobs/" ) );
-    }
-
-    public void setDepthKey( String key )
-    {
-        setDepth( AppPropertiesService.getPropertyInt( "blobstore.file.system.depth", 1 ) );
-    }
 }

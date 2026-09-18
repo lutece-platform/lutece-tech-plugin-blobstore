@@ -37,6 +37,8 @@ import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
+import jakarta.enterprise.context.ApplicationScoped;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -50,6 +52,7 @@ import java.io.OutputStream;
 /**
  * Uses filesystem to store blob. <i>Note that <code>strBasePath</code> is the path were blobs are put.</i>
  */
+@ApplicationScoped
 public class FileSystemBlobStoreDAO implements IFileSystemBlobStoreDAO
 {
     /** The Constant WORD_SIZE. */
