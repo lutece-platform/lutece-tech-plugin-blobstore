@@ -11,23 +11,23 @@ This plugin handles the big data storage, in database or file system.
 
 ## Configuration
 
-Configure the private key for the signature in the file **blobstore_context.xml** :
+Configure the private key used to sign the download URLs in the file **webapp/WEB-INF/conf/plugins/blobstore.properties** :
 
 ```
 
-<bean id="blobstore.hashService" class="fr.paris.lutece.util.signrequest.security.Sha1HashService" />
-<bean id="blobstore.requestAuthenticator" class="fr.paris.lutece.util.signrequest.RequestHashAuthenticator" >
-	<property name="hashService" ref="blobstore.hashService" />
-	<property name="signatureElements" > 
-		<list>
-			<value>blobstore</value>
-			<value>blob_key</value>
-		</list>
-	</property>
-	<property name="privateKey">
-		<value> **change me** </value>
-	</property>
-</bean>
+blobstore.requestAuthenticator.name=signrequest.RequestHashAuthenticator
+blobstore.requestAuthenticator.cfg.hashService=signrequest.Sha1HashService
+blobstore.requestAuthenticator.cfg.signatureElements=blobstore,blob_key
+blobstore.requestAuthenticator.cfg.privateKey= **change me** 
+
+```
+
+The file system store reads its root directory and its depth from the same file. Both resolve through MicroProfile Config, so a system property, an environment variable **BLOBSTORE_FILE_SYSTEM_PATH** or a file under **override/** beats the value shipped here — which is how a container gets a writable path without rebuilding :
+
+```
+
+blobstore.file.system.path=/var/blobs/
+blobstore.file.system.depth=1
 
 ```
 
@@ -48,10 +48,11 @@ Each data is linked to an ID blob which is generated randomly. The use of the li
 
 
 
-The fileStoreService can be added to the Home class :
+The fileStoreService can be added to the Home class. A Home is a static facade, so it resolves the FileService through CDI rather than by injection :
 ```
 
-private static IFileStoreServiceProvider _fileStoreService = FileService.getInstance( ).getFileStoreServiceProvider( "blobStoreProvider");
+private static IFileStoreServiceProvider _fileStoreService = CDI.current( ).select( FileService.class ).get( )
+        .getFileStoreServiceProvider( "blobStoreProvider" );
 
 ```
 You can then use that fileStoreService :
@@ -60,13 +61,20 @@ You can then use that fileStoreService :
 ...
 	// get the file in multipart request and store it
         IFileStoreServiceProvider fileStoreService = MyHome.getFileStoreServiceProvider( );
-        FileItem file = multipartRequest.getFile( "file" );
+        MultipartItem file = multipartRequest.getFile( "file" );
       
         if ( file != null  	&& file.getSize( ) > 0 )
         {
             try
             {
                 String strFileStoreKey = fileStoreService.storeFileItem( file );
+                ...
+            }
+            catch( FileServiceException e )
+            {
+                ...
+            }
+        }
 ...
 	// get an URL for display
 	String strFileUrl = fileStoreService.getFileDownloadUrlBO( strFileKey );
@@ -82,22 +90,16 @@ You can then use that fileStoreService :
 
 
 
-First of all, create a new service that has a private attribute type **BlobStoreService** :
+The plugin ships both stores as CDI beans. Pick one by its name and inject it into your service :
 
 ```
 
+@ApplicationScoped
 public class MyPluginService
 {
-    private BlobStoreService _blobStoreService;
-
-    /**
-     * Set the BlobStoreService
-     * @param blobStoreService the {@link BlobStoreService}
-     */
-    public void setBlobStoreService( BlobStoreService blobStoreService )
-    {
-        _blobStoreService = blobStoreService;
-    }
+    @Inject
+    @Named( "blobstore.databaseBlobStoreService" )
+    private IBlobStoreService _blobStoreService;
     .
     .
     .
@@ -105,33 +107,17 @@ public class MyPluginService
 
 ```
 
-Next, define the service in the XML file of the plugin (ex : webapp/WEB-INF/plugins/myplugin_context.xml). It is in this file where the stored data type is defined.
+ **blobstore.databaseBlobStoreService** stores in database, **blobstore.fileSystemBlobStoreService** stores in file system. Both are configured in webapp/WEB-INF/conf/plugins/blobstore.properties, so a consumer plugin has nothing to declare. A consumer that needs its own named store, a separate database or another root directory, writes its own CDI producer for it.
 
-To store in database (modify the bold words) :
-
-```
-
-<bean id=" **myplugin** .blobStoreService" class="fr.paris.lutece.plugins.blobstore.service.database.DatabaseBlobStoreService">
-	<property name="name" value=" **myplugin** .blobStoreService" />
-</bean>
-<bean id=" **myplugin.myPluginService** " class=" **fr.paris.lutece.plugins.myplugin.service.MyPluginService** ">
-	<property name="blobStoreService" ref=" **myplugin** .blobStoreService" />
-</bean>
+When the store is only known at runtime (a name read from a request or from a property), select it programmatically. **NamedLiteral.of** rejects a null value, so check the name first :
 
 ```
 
-To store in file system (modify the bold words) :
-
-```
-
-<bean id=" **myplugin** .blobStoreService" class="fr.paris.lutece.plugins.blobstore.service.filesystem.FileSystemBlobStoreService">
-	<property name="name" value="<strong>myplugin</strong>.blobStoreService" />
-	<property name="basePath" value=" **D:\data\blobstore** " />
-	<property name="depth" value=" **1** " />
-</bean>
-<bean id=" **myplugin.myPluginService** " class=" **fr.paris.lutece.plugins.myplugin.service.MyPluginService** ">
-	<property name="blobStoreService" ref=" **myplugin** .blobStoreService" />
-</bean>
+if ( StringUtils.isNotBlank( strBlobStoreName ) )
+{
+    IBlobStoreService blobStoreService = CDI.current( )
+            .select( IBlobStoreService.class, NamedLiteral.of( strBlobStoreName ) ).get( );
+}
 
 ```
 

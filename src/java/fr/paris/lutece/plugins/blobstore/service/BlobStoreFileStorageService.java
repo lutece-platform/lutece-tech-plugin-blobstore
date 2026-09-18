@@ -52,8 +52,8 @@ import java.io.InputStream;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.fileupload.FileItem;
+import jakarta.servlet.http.HttpServletRequest;
+import fr.paris.lutece.portal.service.upload.MultipartItem;
 
 /**
  * 
@@ -253,7 +253,7 @@ public class BlobStoreFileStorageService implements IFileStoreServiceProvider
      * {@inheritDoc}
      */
     @Override
-    public String storeFileItem( FileItem fileItem )
+    public String storeFileItem( MultipartItem fileItem )
     {
 
         return _blobStoreService.storeFileItem( fileItem );

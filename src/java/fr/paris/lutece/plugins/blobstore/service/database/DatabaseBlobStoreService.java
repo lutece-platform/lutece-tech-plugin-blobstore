@@ -39,36 +39,50 @@ import org.apache.commons.lang3.StringUtils;
 
 import fr.paris.lutece.plugins.blobstore.business.BytesBlobStore;
 import fr.paris.lutece.plugins.blobstore.business.InputStreamBlobStore;
-import fr.paris.lutece.plugins.blobstore.business.database.DatabaseBlobStoreHome;
 import fr.paris.lutece.plugins.blobstore.business.database.IDatabaseBlobStoreHome;
 import fr.paris.lutece.plugins.blobstore.service.BlobStoreFileItem;
 import fr.paris.lutece.plugins.blobstore.service.IBlobStoreService;
 import fr.paris.lutece.plugins.blobstore.service.download.IBlobStoreDownloadUrlService;
 import fr.paris.lutece.plugins.blobstore.service.download.JSPBlobStoreDownloadUrlService;
 import fr.paris.lutece.plugins.blobstore.util.BlobStoreLibUtils;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import java.io.IOException;
-import org.apache.commons.fileupload.FileItem;
+import fr.paris.lutece.portal.service.upload.MultipartItem;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 /**
  * 
  * DatabaseBlobStoreService.
  * 
  */
+@ApplicationScoped
+@Named( DatabaseBlobStoreService.BEAN_SERVICE )
 public class DatabaseBlobStoreService implements IBlobStoreService
 {
+    /** The CDI bean name of the database blob store shipped by the plugin */
+    public static final String BEAN_SERVICE = "blobstore.databaseBlobStoreService";
     private static final long serialVersionUID = 1L;
     private static final String MESSAGE_COULD_NOT_CREATE_BLOB = "BlobStore Error when generating a new id blob";
 
     /**
-     * name defaulted to databaseBlobstore - only one can be supported by webapp
+     * Name the blob store is known by : it is put in the download URLs, which resolve the store back by that name
      */
-    private String _strName = "databaseBlobstore";
+    @Inject
+    @ConfigProperty( name = "blobstore.databaseBlobStoreService.name", defaultValue = BEAN_SERVICE )
+    private String _strName;
 
     /** Uses {@link JSPBlobStoreDownloadUrlService} as default one */
     private IBlobStoreDownloadUrlService _downloadUrlService = new JSPBlobStoreDownloadUrlService( );
+
+    /** The home of the blobs stored in database */
+    @Inject
+    private IDatabaseBlobStoreHome _databaseBlobStoreHome;
 
     /**
      * Gets the downloadService
@@ -115,8 +129,7 @@ public class DatabaseBlobStoreService implements IBlobStoreService
     @Override
     public void delete( String strKey )
     {
-        IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService.getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
-        databaseBlobStoreHome.remove( strKey );
+        _databaseBlobStoreHome.remove( strKey );
     }
 
     /**
@@ -129,8 +142,7 @@ public class DatabaseBlobStoreService implements IBlobStoreService
 
         if ( StringUtils.isNotBlank( strKey ) )
         {
-            IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService.getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
-            BytesBlobStore blobStore = databaseBlobStoreHome.findByPrimaryKey( strKey );
+            BytesBlobStore blobStore = _databaseBlobStoreHome.findByPrimaryKey( strKey );
 
             if ( blobStore != null )
             {
@@ -155,8 +167,7 @@ public class DatabaseBlobStoreService implements IBlobStoreService
             blobStore.setId( strKey );
             blobStore.setValue( blob );
 
-            IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService.getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
-            databaseBlobStoreHome.create( blobStore );
+            _databaseBlobStoreHome.create( blobStore );
         }
         else
         {
@@ -174,13 +185,12 @@ public class DatabaseBlobStoreService implements IBlobStoreService
     {
         if ( StringUtils.isNotBlank( strKey ) )
         {
-            IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService.getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
-            BytesBlobStore blobStore = databaseBlobStoreHome.findByPrimaryKey( strKey );
+            BytesBlobStore blobStore = _databaseBlobStoreHome.findByPrimaryKey( strKey );
 
             if ( blobStore != null )
             {
                 blobStore.setValue( blob );
-                databaseBlobStoreHome.update( blobStore );
+                _databaseBlobStoreHome.update( blobStore );
             }
         }
     }
@@ -199,8 +209,7 @@ public class DatabaseBlobStoreService implements IBlobStoreService
             blobStore.setInputStream( inputStream );
             blobStore.setId( strKey );
 
-            IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService.getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
-            databaseBlobStoreHome.createInputStream( blobStore );
+            _databaseBlobStoreHome.createInputStream( blobStore );
         }
         else
         {
@@ -216,7 +225,7 @@ public class DatabaseBlobStoreService implements IBlobStoreService
      * @see fr.paris.lutece.portal.service.blobstore.BlobStoreService#storeFileItem (java.io.InputStream)
      */
     @Override
-    public String storeFileItem( FileItem fileItem )
+    public String storeFileItem( MultipartItem fileItem )
     {
         try
         {
@@ -245,8 +254,7 @@ public class DatabaseBlobStoreService implements IBlobStoreService
         blobStore.setInputStream( inputStream );
         blobStore.setId( strKey );
 
-        IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService.getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
-        databaseBlobStoreHome.updateInputStream( blobStore );
+        _databaseBlobStoreHome.updateInputStream( blobStore );
     }
 
     /**
@@ -255,9 +263,7 @@ public class DatabaseBlobStoreService implements IBlobStoreService
     @Override
     public InputStream getBlobInputStream( String strKey )
     {
-        IDatabaseBlobStoreHome databaseBlobStoreHome = SpringContextService.getBean( DatabaseBlobStoreHome.BEAN_SERVICE );
-
-        return databaseBlobStoreHome.findByPrimaryKeyInputStream( strKey );
+        return _databaseBlobStoreHome.findByPrimaryKeyInputStream( strKey );
     }
 
     /**

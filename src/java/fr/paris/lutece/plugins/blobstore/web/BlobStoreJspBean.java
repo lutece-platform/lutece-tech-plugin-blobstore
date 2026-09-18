@@ -40,26 +40,31 @@ import fr.paris.lutece.plugins.blobstore.util.BlobStoreLibConstants;
 import fr.paris.lutece.plugins.blobstore.util.BlobStoreUtils;
 import fr.paris.lutece.portal.service.fileupload.FileUploadService;
 import fr.paris.lutece.portal.service.i18n.I18nService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.util.filesystem.UploadUtil;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.AmbiguousResolutionException;
+import jakarta.enterprise.inject.UnsatisfiedResolutionException;
+import jakarta.enterprise.inject.literal.NamedLiteral;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Provides blob download.
  *
  */
+@RequestScoped
+@Named
 public class BlobStoreJspBean
 {
     private static final String PROPERTY_MESSAGE_NO_SUCH_BLOB = "blobstore.download.noSuchBlob";
@@ -85,7 +90,7 @@ public class BlobStoreJspBean
             String strBlobKey = request.getParameter( BlobStoreLibConstants.PARAMETER_BLOB_KEY );
             String strBlobstore = request.getParameter( BlobStoreLibConstants.PARAMETER_BLOB_STORE );
 
-            IBlobStoreService blobstoreService = (IBlobStoreService) SpringContextService.getBean( strBlobstore );
+            IBlobStoreService blobstoreService = getBlobStoreService( strBlobstore );
 
             if ( blobstoreService != null )
             {
@@ -149,16 +154,7 @@ public class BlobStoreJspBean
         String strBlobKey = request.getParameter( BlobStoreLibConstants.PARAMETER_BLOB_KEY );
         String strBlobstore = request.getParameter( BlobStoreLibConstants.PARAMETER_BLOB_STORE );
 
-        IBlobStoreService blobstoreService;
-
-        try
-        {
-            blobstoreService = (IBlobStoreService) SpringContextService.getBean( strBlobstore );
-        }
-        catch( NoSuchBeanDefinitionException ex )
-        {
-            blobstoreService = null;
-        }
+        IBlobStoreService blobstoreService = getBlobStoreService( strBlobstore );
 
         String strErrorMessage = null;
 
@@ -202,6 +198,36 @@ public class BlobStoreJspBean
     }
 
     /**
+     * Gets the blob store service carrying a name.
+     * 
+     * @param strBlobStore
+     *            the blob store name, read from the request
+     * @return the blob store service, or <code>null</code> when no single service carries that name
+     */
+    private IBlobStoreService getBlobStoreService( String strBlobStore )
+    {
+        if ( StringUtils.isBlank( strBlobStore ) )
+        {
+            return null;
+        }
+
+        try
+        {
+            return CDI.current( ).select( IBlobStoreService.class, NamedLiteral.of( strBlobStore ) ).get( );
+        }
+        catch( AmbiguousResolutionException e )
+        {
+            AppLogService.error( "BlobStoreJspBean - Several blobstore services named '{}' : {}", strBlobStore, e.getMessage( ), e );
+        }
+        catch( UnsatisfiedResolutionException e )
+        {
+            AppLogService.error( "BlobStoreJspBean - No such blobstore service '{}' : {}", strBlobStore, e.getMessage( ), e );
+        }
+
+        return null;
+    }
+
+    /**
      * Writes the file to the response
      * 
      * @param request
@@ -210,7 +236,7 @@ public class BlobStoreJspBean
      *            the response
      * @param file
      *            the file
-     * @return the error message if any, <code>null</code> othrewise.
+     * @return the error message if any, <code>null</code> otherwise or once the response output stream has been taken
      */
     private String writeFile( HttpServletRequest request, HttpServletResponse response, DownloadableFile file )
     {
@@ -245,8 +271,11 @@ public class BlobStoreJspBean
         catch( IOException ioe )
         {
             AppLogService.error( ioe.getMessage( ), ioe );
-            // error message
-            strErrorMessage = I18nService.getLocalizedString( PROPERTY_MESSAGE_ERROR_RETRIEVING_BLOB, request.getLocale( ) );
+
+            if ( ( os == null ) && !response.isCommitted( ) )
+            {
+                strErrorMessage = I18nService.getLocalizedString( PROPERTY_MESSAGE_ERROR_RETRIEVING_BLOB, request.getLocale( ) );
+            }
         }
         finally
         {
