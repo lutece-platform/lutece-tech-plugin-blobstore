@@ -48,6 +48,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.regex.Pattern;
 
 /**
  * Uses filesystem to store blob. <i>Note that <code>strBasePath</code> is the path were blobs are put.</i>
@@ -58,17 +59,21 @@ public class FileSystemBlobStoreDAO implements IFileSystemBlobStoreDAO
     /** The Constant WORD_SIZE. */
     private static final Integer WORD_SIZE = AppPropertiesService.getPropertyInt( "blobstore.folder.split.word_size", 3 );
 
+    private static final Pattern PATTERN_KEY = Pattern.compile( "[A-Za-z0-9_-]+" );
+
     /**
-     * Creates the dir.
+     * Deletes a folder when it is empty.
      *
-     * @param fileLevel1
-     *            the file level1
+     * @param folder
+     *            the folder
      */
-    private void createDir( final File fileLevel1 )
+    private static void deleteIfEmpty( final File folder )
     {
-        if ( !fileLevel1.exists( ) )
+        final String [ ] children = folder.list( );
+
+        if ( ( children != null ) && ( children.length == 0 ) )
         {
-            fileLevel1.mkdir( );
+            folder.delete( );
         }
     }
 
@@ -87,29 +92,14 @@ public class FileSystemBlobStoreDAO implements IFileSystemBlobStoreDAO
         // cleans up useless remaining folders.
         if ( depth.equals( 1 ) )
         {
-            final File folderLevel1 = file.getParentFile( );
-
-            if ( folderLevel1.list( ).length == 0 )
-            {
-                folderLevel1.delete( );
-            }
+            deleteIfEmpty( file.getParentFile( ) );
         }
         else
             if ( depth.equals( 2 ) )
             {
                 final File folderLevel2 = file.getParentFile( );
-
-                if ( folderLevel2.list( ).length == 0 )
-                {
-                    folderLevel2.delete( );
-                }
-
-                File folderLevel1 = folderLevel2.getParentFile( );
-
-                if ( folderLevel1.list( ).length == 0 )
-                {
-                    folderLevel1.delete( );
-                }
+                deleteIfEmpty( folderLevel2 );
+                deleteIfEmpty( folderLevel2.getParentFile( ) );
             }
 
         return ret;
@@ -123,30 +113,31 @@ public class FileSystemBlobStoreDAO implements IFileSystemBlobStoreDAO
      * @param strBasePath
      *            the str base path
      * @param depth
+     *            the depth
      * @return the path
+     * @throws IOException
+     *             when the key is not a blob key: characters other than letters, digits, '-' and '_', or too short for the depth
      */
-    private File getPath( final String blobstoeId, final String strBasePath, Integer depth )
+    private File getPath( final String blobstoeId, final String strBasePath, Integer depth ) throws IOException
     {
+        if ( ( blobstoeId == null ) || !PATTERN_KEY.matcher( blobstoeId ).matches( ) || ( blobstoeId.length( ) < ( WORD_SIZE * depth ) ) )
+        {
+            throw new IOException( "Invalid blob key" );
+        }
+
         final File ret;
 
         if ( depth.equals( 2 ) )
         {
             final String level1 = blobstoeId.substring( 0, WORD_SIZE );
             final String level2 = blobstoeId.substring( WORD_SIZE, WORD_SIZE * 2 );
-            final File folderLevel1 = new File( strBasePath, level1 );
-            createDir( folderLevel1 );
-
-            final File folderLevel2 = new File( folderLevel1.getAbsolutePath( ), level2 );
-            createDir( folderLevel2 );
-            ret = new File( folderLevel2.getAbsolutePath( ), blobstoeId );
+            ret = new File( new File( new File( strBasePath, level1 ), level2 ), blobstoeId );
         }
         else
             if ( depth.equals( 1 ) )
             {
                 final String level1 = blobstoeId.substring( 0, WORD_SIZE );
-                final File folderLevel1 = new File( strBasePath, level1 );
-                createDir( folderLevel1 );
-                ret = new File( folderLevel1.getAbsolutePath( ), blobstoeId );
+                ret = new File( new File( strBasePath, level1 ), blobstoeId );
             }
             else
             {
@@ -274,6 +265,7 @@ public class FileSystemBlobStoreDAO implements IFileSystemBlobStoreDAO
     public void storeInputStream( final InputStreamBlobStore blobStore, final String strBasePath, final Integer depth ) throws IOException
     {
         final File file = this.getPath( blobStore.getId( ), strBasePath, depth );
+        file.getParentFile( ).mkdirs( );
         final OutputStream out = new FileOutputStream( file );
         final InputStream in = blobStore.getInputStream( );
 

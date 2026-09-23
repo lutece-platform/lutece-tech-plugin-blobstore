@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 path=$1
 depth=$2
@@ -45,4 +45,4 @@ do
 done
 
 echo
-echo "Migation terminee"
+echo "Migration terminee"

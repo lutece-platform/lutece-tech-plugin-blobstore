@@ -141,7 +141,7 @@ public class BlobStoreJspBean
     }
 
     /**
-     * Downloads a blob.
+     * Downloads a blob, when the request carries a valid signature.
      * 
      * @param request
      *            the requrest
@@ -151,6 +151,11 @@ public class BlobStoreJspBean
      */
     public String doDownloadBlob( HttpServletRequest request, HttpServletResponse response )
     {
+        if ( !BlobStoreUtils.getRequestAuthenticator( ).isRequestAuthenticated( request ) )
+        {
+            return I18nService.getLocalizedString( PROPERTY_MESSAGE_ACCESS_DENIED, request.getLocale( ) );
+        }
+
         String strBlobKey = request.getParameter( BlobStoreLibConstants.PARAMETER_BLOB_KEY );
         String strBlobstore = request.getParameter( BlobStoreLibConstants.PARAMETER_BLOB_STORE );
 
@@ -221,7 +226,7 @@ public class BlobStoreJspBean
         }
         catch( UnsatisfiedResolutionException e )
         {
-            AppLogService.error( "BlobStoreJspBean - No such blobstore service '{}' : {}", strBlobStore, e.getMessage( ), e );
+            AppLogService.info( "BlobStoreJspBean - No such blobstore service '{}'", strBlobStore );
         }
 
         return null;
@@ -246,7 +251,7 @@ public class BlobStoreJspBean
 
         try
         {
-            response.setHeader( "Content-Disposition", "attachment ;filename=\"" + file.getFileName( ) );
+            response.setHeader( "Content-Disposition", "attachment; filename=\"" + file.getFileName( ).replace( "\"", "" ) + "\";" );
             response.setHeader( "Pragma", "public" );
             response.setHeader( "Expires", "0" );
             response.setHeader( "Cache-Control", "must-revalidate,post-check=0,pre-check=0" );
