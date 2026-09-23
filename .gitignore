@@ -9,3 +9,6 @@ java.io.tmpdir/
 .migration/
 *.log
 e2e/
+.claude/
+CLAUDE.md
+AGENTS.md
